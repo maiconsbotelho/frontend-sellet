@@ -1,3 +1,9 @@
+import Landing from '@/components/landing/landing';
+
 export default function Home() {
-  return <div>SELLET</div>;
+  return (
+    <div>
+      <Landing />
+    </div>
+  );
 }

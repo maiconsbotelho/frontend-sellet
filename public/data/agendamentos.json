@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "cliente": "Maria Silva",
+    "horario": "10:00",
+    "data": "2025-03-24"
+  },
+  {
+    "id": 2,
+    "cliente": "João Souza",
+    "horario": "14:00",
+    "data": "2025-03-24"
+  },
+  {
+    "id": 3,
+    "cliente": "Ana Costa",
+    "horario": "09:30",
+    "data": "2025-03-25"
+  },
+  {
+    "id": 4,
+    "cliente": "Carlos Lima",
+    "horario": "11:00",
+    "data": "2025-03-25"
+  },
+  {
+    "id": 5,
+    "cliente": "Fernanda Rocha",
+    "horario": "16:00",
+    "data": "2025-03-26"
+  },
+  {
+    "id": 6,
+    "cliente": "Ricardo Martins",
+    "horario": "13:00",
+    "data": "2025-03-27"
+  }
+]
