@@ -1,27 +1,27 @@
 // utils/fetcher.ts
-import { isJson } from "@/util/helpers";
+import { isJson } from '@/util/helpers';
 
 export const getFetcher = async (url: string, requestConfigs?: RequestInit) => {
   try {
     const response = await fetch(url, {
-      method: "GET",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
+      method: 'GET',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(requestConfigs?.headers || {}),
       },
       ...requestConfigs,
     });
 
     let resultadoTexto = await response.text();
-    resultadoTexto = resultadoTexto.replace(/(\r\n|\n|\r)/gm, "");
+    resultadoTexto = resultadoTexto.replace(/(\r\n|\n|\r)/gm, '');
 
     if (!isJson(resultadoTexto)) {
-      throw new Error("Erro interno no servidor!");
+      throw new Error('Erro interno no servidor!');
     }
 
     const json = JSON.parse(resultadoTexto);
@@ -38,17 +38,22 @@ export const getFetcher = async (url: string, requestConfigs?: RequestInit) => {
   }
 };
 
-export const postFetcher = async (url: string, body: any, hasItems: boolean, requestConfigs?: RequestInit) => {
+export const postFetcher = async (
+  url: string,
+  body: any,
+  hasItems: boolean,
+  requestConfigs?: RequestInit
+) => {
   try {
     const response = await fetch(url, {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
+      redirect: 'follow',
+      referrerPolicy: 'no-referrer',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(requestConfigs?.headers || {}),
       },
       body: JSON.stringify(body),
@@ -56,21 +61,21 @@ export const postFetcher = async (url: string, body: any, hasItems: boolean, req
     });
 
     let resultadoTexto = await response.text();
-    resultadoTexto = resultadoTexto.replace(/(\r\n|\n|\r)/gm, "");
+    resultadoTexto = resultadoTexto.replace(/(\r\n|\n|\r)/gm, '');
 
-    if (resultadoTexto === "") {
+    if (resultadoTexto === '') {
       return { temErro: false };
     }
 
     if (!isJson(resultadoTexto)) {
-      throw new Error("Erro interno no servidor!");
+      throw new Error('Erro interno no servidor!');
     }
 
     const json = JSON.parse(resultadoTexto);
 
     if (json.ERRO === 1 || json.temErro === true) {
       console.log(json);
-      throw new Error("Erro! Favor tente novamente.");
+      throw new Error('Erro! Favor tente novamente.');
     }
 
     if (hasItems) {
