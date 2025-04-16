@@ -1,8 +1,8 @@
 import Slogan from '@/components/landing/Slogan';
-import NossosServicos from '@/components/secoes/nossosServicos/NossosServicos';
-import Rodape from '@/components/secoes/rodape/Rodape';
-import SecaoBackground from '@/components/secoes/secaoBackground/SecaoBackground';
-import SecaoSobre from '@/components/secoes/sobre/SecaoSobre';
+import NossosServicos from '@/components/landing/sessoes/sessaoServicos';
+import Rodape from '@/components/landing/sessoes/Rodape';
+import SecaoBackground from '@/components/landing/sessoes/SecaoBackground';
+import SecaoSobre from '@/components/landing/sessoes/SecaoSobre';
 
 export default function Landing() {
   return (
@@ -11,9 +11,6 @@ export default function Landing() {
       <SecaoBackground imagem="/banners/servicos.png">
         <NossosServicos />
       </SecaoBackground>
-      {/* <SecaoBackground imagem="/banners/profissionais.webp">
-                <NossosProfissionais />
-            </SecaoBackground> */}
       <SecaoBackground imagem="/banners/sobre.png">
         <SecaoSobre />
       </SecaoBackground>

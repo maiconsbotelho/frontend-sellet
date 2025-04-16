@@ -4,8 +4,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --primary-color: #76253c;
-  --secondary-color: #fddcd0;
+  --primary: #76253c;
+  --secondary: #fddcd0;
   --card: 240 10% 3.9%;
   --card-foreground: 0 0% 98%;
   --popover: 240 10% 3.9%;
@@ -34,8 +34,8 @@
 .dark {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --primary-color: #fddcd0;
-  --secondary-color: #76253c;
+  --primary: #fddcd0;
+  --secondary: #76253c;
 }
 
 @media (prefers-color-scheme: dark) {

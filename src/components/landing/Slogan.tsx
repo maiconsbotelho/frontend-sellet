@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import Cabecalho from '@/components/ui/Cabecalho';
+import Header from '@/components/landing/header';
 
 export default function Slogan() {
   return (
@@ -18,7 +18,8 @@ export default function Slogan() {
                     bg-black/65
                 "
       >
-        <Cabecalho />
+        <Header />
+
         <div className="flex flex-col justify-center items-center flex-1 gap-5">
           <h1 className="flex flex-col items-center">
             <span className="text-2xl text-white sm:text-3xl md:text-4xl lg:text-5xl font-thin ">
