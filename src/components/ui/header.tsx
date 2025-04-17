@@ -8,15 +8,10 @@ import ModalPerfil from '@/components/ui/modalPerfil';
 
 import LogoMotivouLevou from '@/../public/logo.svg';
 
-interface HeaderProps {
-  franquia: 'favorita' | 'motivou-levou' | 'romance';
-}
-
 export default function Header() {
   const router = useRouter();
   const { isModalOpen, openModal } = useModal();
   const [usuario, setUsuario] = useState<string>('');
-  const [rank, setRank] = useState<number | null>(null);
 
   useEffect(() => {
     if (!usuario) {
@@ -27,7 +22,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`w-screen flex flex-col justify-center items-start tracking-tight bg-[var(--bg-primary)] transition-[min-height] duration-700 ease-out
+        className={`w-screen flex flex-col justify-center items-start tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
         `}
       >
         <div

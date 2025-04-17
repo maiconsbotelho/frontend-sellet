@@ -10,14 +10,17 @@
   },
   "dependencies": {
     "@tabler/icons-react": "^3.31.0",
+    "date-fns": "^4.1.0",
     "next": "15.3.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-icons": "^5.5.0",
-    "react-toastify": "^11.0.5"
+    "react-toastify": "^11.0.5",
+    "sonner": "^2.0.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/date-fns": "^2.5.3",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
