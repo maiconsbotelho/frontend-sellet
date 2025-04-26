@@ -183,7 +183,13 @@ const Agenda = () => {
           'http://localhost:8000/api/usuario/?tipo=PROFISSIONAL'
         );
         const data = await response.json();
-        setProfissionais(data);
+        // mapeia nome_completo para nome
+        setProfissionais(
+          data.map((p: any) => ({
+            id: String(p.id),
+            nome: p.nome_completo,
+          }))
+        );
       } catch (error) {
         console.error('Erro ao buscar profissionais:', error);
       }
@@ -193,6 +199,7 @@ const Agenda = () => {
   }, []);
 
   // Busca a agenda do profissional selecionado
+  // http://localhost:8000/api/agenda/agendamentos/agenda/?profissional=6&data_inicial=2025-04-21&data_final=2025-04-27
   useEffect(() => {
     if (profissionalSelecionado) {
       const fetchAgenda = async () => {
@@ -230,7 +237,6 @@ const Agenda = () => {
       <h1 className="text-2xl font-bold text-center mb-4">
         Agenda do Profissional
       </h1>
-
       {/* Seleção de profissional */}
       <div className="mb-4">
         <label
@@ -242,14 +248,23 @@ const Agenda = () => {
         <select
           id="profissional"
           value={profissionalSelecionado || ''}
-          onChange={(e) => setProfissionalSelecionado(e.target.value)}
-          className="w-full p-2 border border-gray-300 rounded-md"
+          onChange={(e) => {
+            const id = e.target.value;
+            setProfissionalSelecionado(id);
+            const prof = profissionais.find((p) => p.id === id);
+            console.log('Profissional selecionado:', prof?.nome);
+          }}
+          className="w-full p-2 border border-gray-300 bg-[var(--primary)] rounded-md"
         >
-          <option value="" disabled>
+          <option className="text-[var(--secondary)]" value="" disabled>
             -- Selecione --
           </option>
           {profissionais.map((profissional) => (
-            <option key={profissional.id} value={profissional.id}>
+            <option
+              key={profissional.id}
+              value={profissional.id}
+              className="text-[var(--secondary)]"
+            >
               {profissional.nome}
             </option>
           ))}
@@ -291,7 +306,6 @@ const Agenda = () => {
           </div>
         )}
       </div>
-
       {/* Botão para alternar visão */}
       <button
         onClick={alternarVisao}
@@ -299,7 +313,6 @@ const Agenda = () => {
       >
         Alternar para visão {visao === 'semana' ? 'Diária' : 'Semanal'}
       </button>
-
       {/* Tabela de agenda */}
       {loading ? (
         <p className="text-center mt-4">Carregando...</p>
@@ -307,7 +320,7 @@ const Agenda = () => {
         <table className="w-full border-collapse border border-gray-300 mt-4">
           <thead>
             <tr>
-              <th className="border border-gray-300 p-2 bg-gray-100">
+              <th className="border border-gray-300 p-2 bg-[var(--primary)] ">
                 Horário
               </th>
               {agenda.length > 0 &&
@@ -316,7 +329,7 @@ const Agenda = () => {
                   .map((dia) => (
                     <th
                       key={dia}
-                      className="border border-gray-300 p-2 bg-gray-100"
+                      className="border border-gray-300 p-2 bg-[var(--primary)] "
                     >
                       {dia}
                     </th>
@@ -332,7 +345,7 @@ const Agenda = () => {
                   .map((dia) => (
                     <td key={dia} className="border border-gray-300 p-2">
                       {linha[dia].ocupado
-                        ? `Cliente: ${linha[dia].nome_cliente}`
+                        ? linha[dia].nome_cliente
                         : linha[dia].ocupado === false
                         ? 'Disponível'
                         : 'Fora do expediente'}
