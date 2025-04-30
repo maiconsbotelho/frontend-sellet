@@ -25,6 +25,12 @@ const navItems = [
     icon: <LiaClipboardListSolid className="text-3xl" />,
     activePath: '/servicos',
   },
+  {
+    label: 'Profissionais',
+    route: '/admin/profissionais',
+    icon: <LiaClipboardListSolid className="text-3xl" />,
+    activePath: '/profissionais',
+  },
 ];
 
 export default function Nav() {
