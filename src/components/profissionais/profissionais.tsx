@@ -11,8 +11,7 @@ type Profissional = {
 };
 
 // Define the base URL for your API
-const API_BASE_URL = 'http://localhost:8000/api';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 export default function ProfissionaisPage() {
   const [professionals, setProfessionals] = useState<Profissional[]>([]);
   const [filteredProfessionals, setFilteredProfessionals] = useState<
