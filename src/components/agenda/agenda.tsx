@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa'; // Import icons
+import React, { useEffect, useState, useMemo } from 'react'; // Added useMemo
+import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 
 // --- Type Definitions ---
 type Profissional = {
@@ -54,6 +54,27 @@ const initialFormState: AgendamentoFormData = {
 
 // --- API Base URL ---
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
+// --- Helper Function to calculate Row Span ---
+const calculateRowSpan = (
+  agenda: AgendaLinha[],
+  rowIndex: number,
+  dia: string,
+  agendamentoId: number | undefined
+): number => {
+  if (!agendamentoId) return 1;
+  let span = 1;
+  for (let i = rowIndex + 1; i < agenda.length; i++) {
+    const nextSlot = agenda[i][dia] as AgendaSlot;
+    if (nextSlot?.agendamento_id === agendamentoId) {
+      span++;
+    } else {
+      break;
+    }
+  }
+  return span;
+};
+
 const Agenda = () => {
   // --- State Variables ---
   const [profissionais, setProfissionais] = useState<Profissional[]>([]);
@@ -108,7 +129,8 @@ const Agenda = () => {
           p.nome.toLowerCase().includes(PROFISSIONAL_PADRAO)
         );
 
-        if (!profissionalSelecionado && fernanda) {
+        // Only set default if profissionalSelecionado is currently null
+        if (profissionalSelecionado === null && fernanda) {
           setProfissionalSelecionado(fernanda.id);
         }
       } catch (error) {
@@ -117,7 +139,8 @@ const Agenda = () => {
     };
 
     fetchProfissionais();
-  }, []); // Tiramos profissionalSelecionado da dependência
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Run only once on mount
 
   // Fetch Clientes
   useEffect(() => {
@@ -162,7 +185,11 @@ const Agenda = () => {
       const response = await fetch(
         `${API_BASE_URL}/agenda/agendamentos/agenda/?profissional=${profissionalSelecionado}&data_inicial=${dataInicial}&data_final=${dataFinal}`
       );
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({})); // Attempt to get error details
+        console.error('API Error Data:', errorData);
+        throw new Error(`Network response was not ok (${response.status})`);
+      }
       const data = await response.json();
       // Ensure data is an array before setting state
       setAgenda(Array.isArray(data) ? data : []);
@@ -177,7 +204,12 @@ const Agenda = () => {
 
   // Re-fetch agenda when dependencies change
   useEffect(() => {
-    fetchAgenda();
+    // Only fetch if a professional is selected
+    if (profissionalSelecionado) {
+      fetchAgenda();
+    } else {
+      setAgenda([]); // Clear agenda if no professional is selected
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [profissionalSelecionado, dataInicial, dataFinal]); // fetchAgenda is stable
 
@@ -186,7 +218,7 @@ const Agenda = () => {
   const handleProfissionalChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setProfissionalSelecionado(e.target.value);
+    setProfissionalSelecionado(e.target.value || null); // Set to null if empty option selected
   };
 
   const handleDateChange = (
@@ -199,8 +231,15 @@ const Agenda = () => {
       if (visao === 'dia') {
         setDataFinal(newDate); // Keep final date same as initial in day view
       }
+      // Ensure final date is not before initial date
+      if (visao === 'semana' && newDate > dataFinal) {
+        setDataFinal(newDate);
+      }
     } else {
-      setDataFinal(newDate);
+      // Ensure final date is not before initial date
+      if (newDate >= dataInicial) {
+        setDataFinal(newDate);
+      }
     }
   };
 
@@ -213,8 +252,21 @@ const Agenda = () => {
       setVisao('semana');
       // Reset to a week view starting from dataInicial
       const start = new Date(dataInicial + 'T00:00:00'); // Ensure correct date parsing
-      const end = new Date(start.setDate(start.getDate() + 6));
-      setDataFinal(end.toISOString().split('T')[0]);
+      // Check if start date is valid before proceeding
+      if (!isNaN(start.getTime())) {
+        const end = new Date(start.setDate(start.getDate() + 6));
+        setDataFinal(end.toISOString().split('T')[0]);
+      } else {
+        console.error(
+          'Invalid start date for week view calculation:',
+          dataInicial
+        );
+        // Optionally reset to default week view or show an error
+        const today = new Date();
+        const nextWeek = new Date(new Date().setDate(today.getDate() + 6));
+        setDataInicial(today.toISOString().split('T')[0]);
+        setDataFinal(nextWeek.toISOString().split('T')[0]);
+      }
     }
   };
 
@@ -241,7 +293,8 @@ const Agenda = () => {
         cliente: '',
         profissional: profissionalSelecionado || '',
         servico: '',
-        data: data || '', // Pre-fill if provided (from cell click)
+        // Use current dataInicial if 'data' is not provided (e.g., '+' button)
+        data: data || dataInicial,
         hora: hora || '', // Pre-fill if provided (from cell click)
       });
     } else if (mode === 'edit' && agendamento && data && hora) {
@@ -259,6 +312,7 @@ const Agenda = () => {
       setModalFormData({
         ...initialFormState,
         profissional: profissionalSelecionado || '',
+        data: dataInicial, // Default to current start date
       });
     }
 
@@ -277,26 +331,32 @@ const Agenda = () => {
     setModalError(null);
 
     const { id, ...formData } = modalFormData;
-    const payload = {
-      ...formData,
-      // Convert IDs back to numbers for the API
-      cliente: parseInt(formData.cliente, 10),
-      profissional: parseInt(formData.profissional, 10),
-      servico: parseInt(formData.servico, 10),
-    };
 
-    // Basic validation
+    // Ensure IDs are valid numbers before parsing
+    const clienteId = parseInt(formData.cliente, 10);
+    const profissionalId = parseInt(formData.profissional, 10);
+    const servicoId = parseInt(formData.servico, 10);
+
+    // Basic validation including checking if parsing resulted in NaN
     if (
-      !payload.cliente ||
-      !payload.profissional ||
-      !payload.servico ||
-      !payload.data ||
-      !payload.hora
+      isNaN(clienteId) ||
+      isNaN(profissionalId) ||
+      isNaN(servicoId) ||
+      !formData.data ||
+      !formData.hora
     ) {
-      setModalError('Todos os campos são obrigatórios.');
+      setModalError('Todos os campos são obrigatórios e devem ser válidos.');
       setLoadingModal(false);
       return;
     }
+
+    const payload = {
+      cliente: clienteId,
+      profissional: profissionalId,
+      servico: servicoId,
+      data: formData.data,
+      hora: formData.hora,
+    };
 
     const url =
       modalMode === 'add'
@@ -319,19 +379,26 @@ const Agenda = () => {
           // Handle non_field_errors or specific field errors
           if (errorData.non_field_errors) {
             errorMessage = errorData.non_field_errors.join(' ');
+          } else if (errorData.detail) {
+            // Handle DRF default detail error
+            errorMessage = errorData.detail;
           } else {
             // Join messages from all fields
             errorMessage = Object.entries(errorData)
               .map(
                 ([field, errors]) =>
-                  `${field}: ${(errors as string[]).join(' ')}`
+                  `${field}: ${
+                    Array.isArray(errors) ? errors.join(' ') : errors
+                  }` // Handle both array and string errors
               )
               .join('; ');
           }
         } else if (typeof errorData === 'string') {
           errorMessage = errorData;
         }
-        throw new Error(errorMessage);
+        throw new Error(
+          errorMessage || `Erro desconhecido (${response.status})`
+        );
       }
 
       closeModal();
@@ -389,66 +456,38 @@ const Agenda = () => {
   // --- Helper Functions ---
 
   // Filter services available for the selected professional
-  const getAvailableServices = () => {
+  const getAvailableServices = useMemo(() => {
     if (!profissionalSelecionado) return [];
+    // Ensure profissionalSelecionado is a valid number before parsing
     const profIdNumber = parseInt(profissionalSelecionado, 10);
-    // Ensure s.profissionais is treated as an array
+    if (isNaN(profIdNumber)) return [];
+
+    // Ensure s.profissionais is treated as an array and contains numbers
     return servicos.filter(
       (s) =>
-        Array.isArray(s.profissionais) && s.profissionais.includes(profIdNumber)
+        Array.isArray(s.profissionais) &&
+        s.profissionais.some(
+          (profId) => typeof profId === 'number' && profId === profIdNumber
+        )
     );
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profissionalSelecionado, servicos]); // Dependencies
+
+  // Memoize date keys to avoid recalculating on every render
+  const dateKeys = useMemo(() => {
+    if (agenda.length === 0) return [];
+    return Object.keys(agenda[0]).filter((key) => key !== 'horario');
+  }, [agenda]);
 
   // --- Render Logic ---
 
-  const renderCellContent = (dia: string, linha: AgendaLinha) => {
-    const slot = linha[dia] as AgendaSlot;
-    const horario = linha.horario;
-
-    if (slot.ocupado === null) {
-      return <span className="text-gray-400 italic text-xs">Fora</span>; // Outside working hours, adjusted style
-    }
-
-    if (slot.ocupado === true) {
-      // Occupied slot - clickable to edit/view
-      return (
-        <button
-          onClick={() => openModal('edit', dia, horario, slot)}
-          className="w-full h-full text-left p-1 bg-red-400 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
-          title={`Editar Agendamento: ${slot.nome_cliente} (${
-            slot.servico_nome || 'Serviço'
-          })`} // Use || for fallback
-        >
-          <span className="font-medium truncate">{slot.nome_cliente}</span>
-          {/* Truncate long names */}
-          <span className="text-[var(--primary)] truncate">
-            {' '}
-            {/* Truncate long names */}({slot.servico_nome || 'Serviço'})
-            {/* Display service name */}
-          </span>
-        </button>
-      );
-    } else {
-      // Available slot - clickable to add
-      return (
-        <button
-          onClick={() => openModal('add', dia, horario)}
-          className="w-full h-full text-white bg-green-500 font-bold hover:bg-[var(--primary)] rounded flex items-center justify-center text-xs px-5"
-          title={`Agendar ${dia} ${horario}`}
-        >
-          Disponível
-        </button>
-      );
-    }
-  };
-
   return (
-    <div className="w-screen mx-auto  p-5">
+    <div className="w-screen mx-auto p-5">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Agenda</h1>
+        <h1 className="text-2xl text-[var(--primary)] font-bold">Agenda</h1>
         <button
           onClick={() => openModal('add')}
-          className="bg-[var(--primary)]  text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
+          className="bg-green-300 text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
           title="Novo Agendamento"
           disabled={!profissionalSelecionado} // Disable if no professional selected
         >
@@ -472,7 +511,8 @@ const Agenda = () => {
             onChange={handleProfissionalChange}
             className="w-full p-2 border border-gray-300 bg-[var(--primary)] rounded-md text-[var(--secondary)]"
           >
-            <option value="" disabled>
+            {/* Add a default "Selecione" option */}
+            <option value="" disabled={profissionais.length > 0}>
               -- Selecione --
             </option>
             {profissionais.map((p) => (
@@ -542,52 +582,114 @@ const Agenda = () => {
         <p className="text-center mt-4 text-gray-500">
           Selecione um profissional para ver a agenda.
         </p>
-      ) : agenda.length === 0 ? (
+      ) : agenda.length === 0 && !loading ? ( // Check loading state again
         <p className="text-center mt-4 text-gray-500">
-          Nenhum horário encontrado para o período selecionado.
+          Nenhum horário encontrado para o profissional e período selecionados.
         </p>
       ) : (
         <div className="overflow-x-auto ">
           <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
             <thead>
-              <tr className="bg-[var(--primary)] text-[var(--secondary)]">
+              <tr className="bg-[var(--primary)]  text-white">
                 <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
                   Horário
                 </th>
-                {/* Get date keys dynamically, excluding 'horario' */}
-                {Object.keys(agenda[0] || {})
-                  .filter((key) => key !== 'horario')
-                  .map((dia) => (
-                    <th
-                      key={dia}
-                      className="border border-gray-300 p-2 font-semibold"
-                    >
-                      {/* Format date for display if needed */}
-                      {new Date(dia + 'T00:00:00').toLocaleDateString('pt-BR', {
-                        weekday: 'short',
-                        day: '2-digit',
-                        month: '2-digit',
-                      })}
-                    </th>
-                  ))}
+                {/* Use memoized dateKeys */}
+                {dateKeys.map((dia) => (
+                  <th
+                    key={dia}
+                    className="border border-gray-300 p-2 font-semibold min-w-[100px]" // Add min-width
+                  >
+                    {/* Format date for display if needed */}
+                    {new Date(dia + 'T00:00:00').toLocaleDateString('pt-BR', {
+                      weekday: 'short',
+                      day: '2-digit',
+                      month: '2-digit',
+                    })}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody>
-              {agenda.map((linha) => (
+              {agenda.map((linha, rowIndex) => (
                 <tr key={linha.horario} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-[var(--primary)] z-10">
+                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
                     {linha.horario}
                   </td>
-                  {Object.keys(linha)
-                    .filter((key) => key !== 'horario')
-                    .map((dia) => (
+                  {/* Iterate through dateKeys to ensure consistent column order */}
+                  {dateKeys.map((dia) => {
+                    const slot = linha[dia] as AgendaSlot;
+                    const horario = linha.horario;
+                    const agendamentoId = slot?.agendamento_id;
+
+                    // Check if this cell is part of a previous row's span
+                    if (rowIndex > 0 && agendamentoId) {
+                      const prevSlot = agenda[rowIndex - 1][dia] as AgendaSlot;
+                      if (prevSlot?.agendamento_id === agendamentoId) {
+                        return null; // Don't render this cell, it's covered by rowspan
+                      }
+                    }
+
+                    // Calculate rowspan if it's an occupied slot starting here
+                    const rowSpan =
+                      slot?.ocupado === true
+                        ? calculateRowSpan(agenda, rowIndex, dia, agendamentoId)
+                        : 1;
+
+                    // --- Render Cell Content ---
+                    let cellContent;
+                    let cellClassName =
+                      'border border-gray-300 p-0 text-center h-12 align-top'; // Default class, align top for rowspan
+
+                    if (slot?.ocupado === null) {
+                      cellContent = (
+                        <span className="text-gray-400 italic text-xs p-1">
+                          Fora
+                        </span>
+                      );
+                    } else if (slot?.ocupado === true) {
+                      // Occupied slot - clickable to edit/view
+                      cellContent = (
+                        <button
+                          onClick={() => openModal('edit', dia, horario, slot)}
+                          className="w-full h-full text-left p-1 bg-[var(--secondary)] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                          title={`Editar Agendamento: ${slot.nome_cliente} (${
+                            slot.servico_nome || 'Serviço'
+                          })`}
+                          // Adjust height based on rowspan if needed, or use flex properties
+                          style={{ height: `${rowSpan * 3}rem` }} // 3rem approx h-12
+                        >
+                          <span className="font-medium truncate">
+                            {slot.nome_cliente}
+                          </span>
+                          <span className="text-[var(--primary)] truncate">
+                            ({slot.servico_nome || 'Serviço'})
+                          </span>
+                        </button>
+                      );
+                    } else {
+                      // Available slot - clickable to add
+                      cellContent = (
+                        <button
+                          onClick={() => openModal('add', dia, horario)}
+                          className="w-full h-full text-black bg-transparent font-bold hover:bg-[var(--primary)] rounded flex items-center justify-center text-xs px-5"
+                          title={`Agendar ${dia} ${horario}`}
+                        ></button>
+                      );
+                      cellClassName =
+                        'border border-gray-300 p-0 text-center h-12'; // Reset class for non-rowspan
+                    }
+
+                    return (
                       <td
                         key={`${dia}-${linha.horario}`}
-                        className="border border-gray-300 p-0 text-center h-12" // Remove padding, control via button/content
+                        className={cellClassName}
+                        rowSpan={rowSpan > 1 ? rowSpan : undefined} // Apply rowspan only if > 1
                       >
-                        {renderCellContent(dia, linha)}
+                        {cellContent}
                       </td>
-                    ))}
+                    );
+                  })}
                 </tr>
               ))}
             </tbody>
@@ -668,17 +770,32 @@ const Agenda = () => {
                   onChange={handleModalChange}
                   required
                   className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={!profissionalSelecionado}
+                  disabled={
+                    !profissionalSelecionado ||
+                    getAvailableServices.length === 0
+                  } // Disable if no services
                 >
                   <option value="" disabled>
-                    -- Selecione --
+                    {profissionalSelecionado
+                      ? '-- Selecione --'
+                      : '-- Selecione Profissional --'}
                   </option>
-                  {getAvailableServices().map((s) => (
-                    <option key={s.id} value={String(s.id)}>
-                      {s.nome}
-                    </option>
-                  ))}
+                  {getAvailableServices.map(
+                    (
+                      s // Use memoized list
+                    ) => (
+                      <option key={s.id} value={String(s.id)}>
+                        {s.nome}
+                      </option>
+                    )
+                  )}
                 </select>
+                {profissionalSelecionado &&
+                  getAvailableServices.length === 0 && (
+                    <p className="text-xs text-red-500 mt-1">
+                      Nenhum serviço disponível para este profissional.
+                    </p>
+                  )}
               </div>
 
               {/* Data */}
@@ -697,7 +814,8 @@ const Agenda = () => {
                   onChange={handleModalChange}
                   required
                   className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  readOnly={modalMode === 'edit'} // Usually don't change date/time easily when editing from grid
+                  // Allow changing date/time when editing if needed, remove readOnly
+                  // readOnly={modalMode === 'edit'}
                 />
               </div>
 
@@ -717,7 +835,8 @@ const Agenda = () => {
                   onChange={handleModalChange}
                   required
                   className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  readOnly={modalMode === 'edit'} // Usually don't change date/time easily when editing from grid
+                  // Allow changing date/time when editing if needed, remove readOnly
+                  // readOnly={modalMode === 'edit'}
                   step="1800" // Optional: Set step for time picker (e.g., 30 minutes)
                 />
               </div>
