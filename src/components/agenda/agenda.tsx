@@ -91,20 +91,33 @@ const Agenda = () => {
           `${API_BASE_URL}/usuario/?tipo=PROFISSIONAL`
         );
         if (!response.ok) throw new Error('Network response was not ok');
+
         const data = await response.json();
-        setProfissionais(
-          data.map((p: any) => ({
-            id: String(p.id), // Ensure ID is string
-            nome: p.nome_completo,
-          }))
+
+        // Tipando diretamente como Profissional[]
+        const profissionaisFormatados: Profissional[] = data.map((p: any) => ({
+          id: String(p.id),
+          nome: p.nome_completo,
+        }));
+
+        setProfissionais(profissionaisFormatados);
+
+        // SETA FERNANDA TELLES como padrão se ainda não tiver um profissional selecionado
+        const PROFISSIONAL_PADRAO = 'fernanda telles';
+        const fernanda = profissionaisFormatados.find((p) =>
+          p.nome.toLowerCase().includes(PROFISSIONAL_PADRAO)
         );
+
+        if (!profissionalSelecionado && fernanda) {
+          setProfissionalSelecionado(fernanda.id);
+        }
       } catch (error) {
         console.error('Erro ao buscar profissionais:', error);
-        // Handle error display to user if needed
       }
     };
+
     fetchProfissionais();
-  }, []);
+  }, []); // Tiramos profissionalSelecionado da dependência
 
   // Fetch Clientes
   useEffect(() => {
@@ -488,7 +501,7 @@ const Agenda = () => {
               id="dataInicial"
               value={dataInicial}
               onChange={(e) => handleDateChange(e, 'inicial')}
-              className="p-2 border border-gray-300 rounded-md w-full"
+              className="p-2 border bg-[var(--secondary)] text-[var(--primary)] border-gray-300 rounded-md w-full"
             />
           </div>
           {visao === 'semana' && (
@@ -505,7 +518,7 @@ const Agenda = () => {
                 value={dataFinal}
                 min={dataInicial} // Prevent end date before start date
                 onChange={(e) => handleDateChange(e, 'final')}
-                className="p-2 border border-gray-300 rounded-md w-full"
+                className="p-2 bg-[var(--secondary)] text-[var(--primary)] border border-gray-300 rounded-md w-full"
               />
             </div>
           )}
@@ -515,7 +528,7 @@ const Agenda = () => {
         <div className="flex justify-end">
           <button
             onClick={alternarVisao}
-            className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
+            className=" text-[var(--secondary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
           >
             Ver {visao === 'semana' ? 'Dia' : 'Semana'}
           </button>
