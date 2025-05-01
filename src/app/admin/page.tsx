@@ -8,7 +8,6 @@ export default function AdminPage() {
     <div className="flex flex-col items-center justify-start h-screen">
       {/* <DashboardSemanal /> */}
       <Agenda />
-      <Nav />
     </div>
   );
 }

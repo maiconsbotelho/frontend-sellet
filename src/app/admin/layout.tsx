@@ -7,7 +7,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="flex flex-col items-center justify-start h-screen">
+    <div className="flex flex-col items-center justify-start ">
       <Header />
       {children}
       <Nav />

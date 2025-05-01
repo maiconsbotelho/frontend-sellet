@@ -10,7 +10,6 @@ export default function ExpedientePages() {
   return (
     <div className="flex flex-col items-center justify-start h-screen">
       <ExpedientePage />
-      <Nav />
     </div>
   );
 }

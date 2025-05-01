@@ -1,11 +1,12 @@
-// filepath: /home/maicon/workspace/sellet/frontend-sellet/tailwind.config.js
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  darkMode: 'class', // Habilita o modo escuro baseado em classe
   content: [
-    './src/**/*.{js,ts,jsx,tsx}',
-    './app/**/*.{js,ts,jsx,tsx}',
-    './components/**/*.{js,ts,jsx,tsx}',
-    './pages/**/*.{js,ts,jsx,tsx}',
+    // Caminhos para seus arquivos que usam classes Tailwind
+    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    // Adicione outros diretórios se necessário
   ],
   theme: {
     container: {
@@ -17,20 +18,30 @@ module.exports = {
     },
     extend: {
       colors: {
-        primary: 'var(--primary-color)',
-        secondary: 'var(--secondary-color)',
-        background: 'var(--background-color)',
-        foreground: 'var(--foreground-color)',
+        // Mapeamento direto para variáveis CSS principais
+        primary: 'var(--primary)',
+        secondary: 'var(--secondary)',
+        background: 'var(--background)',
+        foreground: 'var(--foreground)',
+
+        // Mapeamento para variáveis HSL (usado por shadcn/ui e similares)
+        // Garante que as variáveis CSS (--border, --input, etc.)
+        // estejam definidas em :root e .dark no globals.css
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
-        primaryy: {
-          DEFAULT: 'hsl(var(--primary))',
-          foreground: 'hsl(var(--primary-foreground))',
+        // Nota: Renomeei 'primaryy' para 'primary_hsl' e 'secondaryy' para 'secondary_hsl'
+        // para maior clareza e para usar as variáveis HSL definidas no globals.css.
+        // Ajuste os nomes das variáveis (--primary-hsl, etc.) se forem diferentes.
+        primary_hsl: {
+          // Usando as variáveis HSL
+          DEFAULT: 'hsl(var(--primary-hsl))',
+          foreground: 'hsl(var(--primary-foreground-hsl))',
         },
-        secondaryy: {
-          DEFAULT: 'hsl(var(--secondary))',
-          foreground: 'hsl(var(--secondary-foreground))',
+        secondary_hsl: {
+          // Usando as variáveis HSL
+          DEFAULT: 'hsl(var(--secondary-hsl))',
+          foreground: 'hsl(var(--secondary-foreground-hsl))',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -74,5 +85,5 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [require('tailwindcss-animate')], // Adicione plugins se estiver usando (ex: tailwindcss-animate para shadcn/ui)
 };

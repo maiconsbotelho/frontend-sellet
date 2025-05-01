@@ -2,9 +2,10 @@
 import { usePathname, useRouter } from 'next/navigation';
 
 // Icons
-import { IoCalendarOutline } from 'react-icons/io5';
+import { IoCalendarOutline, IoTimeOutline } from 'react-icons/io5';
 import { FaPeopleGroup } from 'react-icons/fa6';
 import { LiaClipboardListSolid } from 'react-icons/lia';
+import { GiCaptainHatProfile } from 'react-icons/gi';
 
 const navItems = [
   {
@@ -17,25 +18,25 @@ const navItems = [
     label: 'Clientes',
     route: '/admin/clientes',
     icon: <FaPeopleGroup className="text-3xl" />,
-    activePath: '/clientes',
+    activePath: '/admin/clientes',
   },
   {
     label: 'Serviços',
     route: '/admin/servicos',
     icon: <LiaClipboardListSolid className="text-3xl" />,
-    activePath: '/servicos',
+    activePath: '/admin/servicos',
   },
   {
     label: 'Profissionais',
     route: '/admin/profissionais',
-    icon: <LiaClipboardListSolid className="text-3xl" />,
-    activePath: '/profissionais',
+    icon: <GiCaptainHatProfile className="text-3xl" />,
+    activePath: '/admin/profissionais',
   },
   {
-    label: 'expediente',
+    label: 'Expediente',
     route: '/admin/expediente',
-    icon: <LiaClipboardListSolid className="text-3xl" />,
-    activePath: '/expediente',
+    icon: <IoTimeOutline className="text-3xl" />,
+    activePath: '/admin/expediente',
   },
 ];
 
@@ -44,19 +45,23 @@ export default function Nav() {
   const path = usePathname();
 
   return (
-    <div className="w-screen fixed left-0 bottom-0 pt-4 pb-12 px-4 bg-[var(--primary)] backdrop-blur-sm tracking-tighter">
-      <div className="w-full grid grid-cols-[1fr_1fr_1fr] relative text-xs text-[var(--secondary)]">
+    <div className="w-screen z-50 fixed left-0 bottom-0 pt-4 pb-12 px-4 bg-[var(--primary)] backdrop-blur-sm tracking-tighter overflow-hidden">
+      {' '}
+      {/* Adicionado overflow-hidden */}
+      <div className="w-full flex overflow-x-auto space-x-6 pb-2 relative text-xs text-[var(--secondary)]">
+        {' '}
+        {/* Alterado para flex, overflow-x-auto e adicionado space-x e pb */}
         {navItems.map((item, index) => (
           <div
             key={index}
             onClick={() => router.push(item.route)}
-            className="flex flex-col justify-center items-center gap-1 cursor-pointer"
+            className="flex flex-col flex-shrink-0 justify-center items-center gap-1 cursor-pointer w-20" // Adicionado flex-shrink-0 e w-20 (ajuste conforme necessário)
             aria-label={item.label}
           >
             {item.icon}
             <p
               className={`text-center ${
-                path === item.activePath ? 'text-principal' : ''
+                path === item.activePath ? 'text-principal font-semibold' : '' // Adicionado font-semibold para destaque
               }`}
             >
               {item.label}

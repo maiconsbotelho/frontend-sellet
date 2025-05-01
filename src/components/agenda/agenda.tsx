@@ -401,16 +401,16 @@ const Agenda = () => {
       return (
         <button
           onClick={() => openModal('edit', dia, horario, slot)}
-          className="w-full h-full text-left p-1 bg-red-100 hover:bg-red-200 rounded text-xs flex flex-col justify-center" // Use flex for better alignment
+          className="w-full h-full text-left p-1 bg-red-400 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
           title={`Editar Agendamento: ${slot.nome_cliente} (${
             slot.servico_nome || 'Serviço'
           })`} // Use || for fallback
         >
-          <span className="font-medium truncate">{slot.nome_cliente}</span>{' '}
+          <span className="font-medium truncate">{slot.nome_cliente}</span>
           {/* Truncate long names */}
-          <span className="text-red-700 truncate">
+          <span className="text-[var(--primary)] truncate">
             {' '}
-            {/* Truncate long names */}({slot.servico_nome || 'Serviço'}){' '}
+            {/* Truncate long names */}({slot.servico_nome || 'Serviço'})
             {/* Display service name */}
           </span>
         </button>
@@ -420,7 +420,7 @@ const Agenda = () => {
       return (
         <button
           onClick={() => openModal('add', dia, horario)}
-          className="w-full h-full text-green-600 hover:bg-green-100 rounded flex items-center justify-center text-xs p-1"
+          className="w-full h-full text-white bg-green-500 font-bold hover:bg-[var(--primary)] rounded flex items-center justify-center text-xs px-5"
           title={`Agendar ${dia} ${horario}`}
         >
           Disponível
@@ -430,12 +430,12 @@ const Agenda = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="w-screen mx-auto  p-5">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Agenda</h1>
         <button
           onClick={() => openModal('add')}
-          className="bg-blue-500 text-white p-2 rounded-full hover:bg-blue-600 disabled:opacity-50"
+          className="bg-[var(--primary)]  text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
           title="Novo Agendamento"
           disabled={!profissionalSelecionado} // Disable if no professional selected
         >
@@ -534,8 +534,8 @@ const Agenda = () => {
           Nenhum horário encontrado para o período selecionado.
         </p>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300 mt-4 text-sm">
+        <div className="overflow-x-auto ">
+          <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
             <thead>
               <tr className="bg-[var(--primary)] text-[var(--secondary)]">
                 <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
@@ -562,7 +562,7 @@ const Agenda = () => {
             <tbody>
               {agenda.map((linha) => (
                 <tr key={linha.horario} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
+                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-[var(--primary)] z-10">
                     {linha.horario}
                   </td>
                   {Object.keys(linha)
