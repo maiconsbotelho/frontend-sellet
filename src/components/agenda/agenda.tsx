@@ -482,9 +482,9 @@ const Agenda = () => {
   // --- Render Logic ---
 
   return (
-    <div className="w-screen mx-auto p-5">
+    <div className="w-screen text-[#d8bfaa] mx-auto p-5">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl text-[var(--primary)] font-bold">Agenda</h1>
+        <h1 className="text-2xl  font-bold">Agenda</h1>
         <button
           onClick={() => openModal('add')}
           className="bg-green-300 text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
@@ -541,7 +541,7 @@ const Agenda = () => {
               id="dataInicial"
               value={dataInicial}
               onChange={(e) => handleDateChange(e, 'inicial')}
-              className="p-2 border bg-[var(--secondary)] text-[var(--primary)] border-gray-300 rounded-md w-full"
+              className="p-2 border text-[var(--secondary)] bg-[var(--primary)] border-gray-300 rounded-md w-full"
             />
           </div>
           {visao === 'semana' && (
@@ -558,7 +558,7 @@ const Agenda = () => {
                 value={dataFinal}
                 min={dataInicial} // Prevent end date before start date
                 onChange={(e) => handleDateChange(e, 'final')}
-                className="p-2 bg-[var(--secondary)] text-[var(--primary)] border border-gray-300 rounded-md w-full"
+                className="p-2 text-[var(--secondary)] bg-[var(--primary)] border border-gray-300 rounded-md w-full"
               />
             </div>
           )}
@@ -590,7 +590,7 @@ const Agenda = () => {
         <div className="overflow-x-auto ">
           <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
             <thead>
-              <tr className="bg-[var(--primary)]  text-white">
+              <tr className="bg-[var(--primary)]  text-[var(--secondary)]">
                 <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
                   Horário
                 </th>
@@ -652,7 +652,7 @@ const Agenda = () => {
                       cellContent = (
                         <button
                           onClick={() => openModal('edit', dia, horario, slot)}
-                          className="w-full h-full text-left p-1 bg-[var(--secondary)] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                          className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
                           title={`Editar Agendamento: ${slot.nome_cliente} (${
                             slot.servico_nome || 'Serviço'
                           })`}
