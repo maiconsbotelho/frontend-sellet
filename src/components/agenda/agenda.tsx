@@ -509,7 +509,7 @@ const Agenda = () => {
             id="profissional"
             value={profissionalSelecionado || ''}
             onChange={handleProfissionalChange}
-            className="w-full p-2 border border-[#E0E0E0] bg-[#F8BBD0] rounded-md text-[#212121]"
+            className="w-full p-2 border border-[#E0E0E0] bg-[var(--primary)] rounded-md text-[#fff]"
           >
             {/* Add a default "Selecione" option */}
             <option value="" disabled={profissionais.length > 0}>
@@ -568,7 +568,7 @@ const Agenda = () => {
         <div className="flex justify-end">
           <button
             onClick={alternarVisao}
-            className=" text-[#FFFFFF] bg-[#E91E63] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
+            className=" text-[var(--secondary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
           >
             Ver {visao === 'semana' ? 'Dia' : 'Semana'}
           </button>
@@ -590,8 +590,8 @@ const Agenda = () => {
         <div className="overflow-x-auto ">
           <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
             <thead>
-              <tr className="bg-[#F8BBD0] text-[#212121]">
-                <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[#F8BBD0] z-10">
+              <tr className="bg-[var(--primary)]  text-[var(--secondary)]">
+                <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
                   Horário
                 </th>
                 {/* Use memoized dateKeys */}
@@ -613,7 +613,7 @@ const Agenda = () => {
             <tbody>
               {agenda.map((linha, rowIndex) => (
                 <tr key={linha.horario} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white text-[#212121] z-10">
+                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
                     {linha.horario}
                   </td>
                   {/* Iterate through dateKeys to ensure consistent column order */}
@@ -652,17 +652,17 @@ const Agenda = () => {
                       cellContent = (
                         <button
                           onClick={() => openModal('edit', dia, horario, slot)}
-                          className="w-full h-full text-left p-1 bg-[#F8BBD0] text-[#212121] border-[#E0E0E0] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                          className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
                           title={`Editar Agendamento: ${slot.nome_cliente} (${
                             slot.servico_nome || 'Serviço'
                           })`}
                           // Adjust height based on rowspan if needed, or use flex properties
                           style={{ height: `${rowSpan * 3}rem` }} // 3rem approx h-12
                         >
-                          <span className="font-medium truncate">
+                          <span className="font-medium text-zinc-900 truncate">
                             {slot.nome_cliente}
                           </span>
-                          <span className="text-[var(--primary)] truncate">
+                          <span className="truncate">
                             ({slot.servico_nome || 'Serviço'})
                           </span>
                         </button>
