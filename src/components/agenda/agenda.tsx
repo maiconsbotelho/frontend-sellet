@@ -482,12 +482,12 @@ const Agenda = () => {
   // --- Render Logic ---
 
   return (
-    <div className="w-screen text-[#d8bfaa] mx-auto p-5">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl  font-bold">Agenda</h1>
+    <div className="w-screen text-[#757575] mx-auto p-5">
+      <div className="flex justify-between  items-center mb-4">
+        <h1 className="text-2xl  font-bold text-[#E91E63] ">Agenda</h1>
         <button
           onClick={() => openModal('add')}
-          className="bg-green-300 text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
+          className="bg-[#E91E63] text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
           title="Novo Agendamento"
           disabled={!profissionalSelecionado} // Disable if no professional selected
         >
@@ -509,7 +509,7 @@ const Agenda = () => {
             id="profissional"
             value={profissionalSelecionado || ''}
             onChange={handleProfissionalChange}
-            className="w-full p-2 border border-gray-300 bg-[var(--primary)] rounded-md text-[var(--secondary)]"
+            className="w-full p-2 border border-[#E0E0E0] bg-[#F8BBD0] rounded-md text-[#212121]"
           >
             {/* Add a default "Selecione" option */}
             <option value="" disabled={profissionais.length > 0}>
@@ -541,7 +541,7 @@ const Agenda = () => {
               id="dataInicial"
               value={dataInicial}
               onChange={(e) => handleDateChange(e, 'inicial')}
-              className="p-2 border text-[var(--secondary)] bg-[var(--primary)] border-gray-300 rounded-md w-full"
+              className="p-2 border text-[#212121] bg-[#FFFFFF] border-[#E0E0E0] rounded-md w-full"
             />
           </div>
           {visao === 'semana' && (
@@ -558,7 +558,7 @@ const Agenda = () => {
                 value={dataFinal}
                 min={dataInicial} // Prevent end date before start date
                 onChange={(e) => handleDateChange(e, 'final')}
-                className="p-2 text-[var(--secondary)] bg-[var(--primary)] border border-gray-300 rounded-md w-full"
+                className="p-2 border text-[#212121] bg-[#FFFFFF] border-[#E0E0E0] rounded-md w-full"
               />
             </div>
           )}
@@ -568,7 +568,7 @@ const Agenda = () => {
         <div className="flex justify-end">
           <button
             onClick={alternarVisao}
-            className=" text-[var(--secondary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
+            className=" text-[#FFFFFF] bg-[#E91E63] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
           >
             Ver {visao === 'semana' ? 'Dia' : 'Semana'}
           </button>
@@ -590,8 +590,8 @@ const Agenda = () => {
         <div className="overflow-x-auto ">
           <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
             <thead>
-              <tr className="bg-[var(--primary)]  text-[var(--secondary)]">
-                <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
+              <tr className="bg-[#F8BBD0] text-[#212121]">
+                <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[#F8BBD0] z-10">
                   Horário
                 </th>
                 {/* Use memoized dateKeys */}
@@ -613,7 +613,7 @@ const Agenda = () => {
             <tbody>
               {agenda.map((linha, rowIndex) => (
                 <tr key={linha.horario} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
+                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white text-[#212121] z-10">
                     {linha.horario}
                   </td>
                   {/* Iterate through dateKeys to ensure consistent column order */}
@@ -652,7 +652,7 @@ const Agenda = () => {
                       cellContent = (
                         <button
                           onClick={() => openModal('edit', dia, horario, slot)}
-                          className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                          className="w-full h-full text-left p-1 bg-[#F8BBD0] text-[#212121] border-[#E0E0E0] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
                           title={`Editar Agendamento: ${slot.nome_cliente} (${
                             slot.servico_nome || 'Serviço'
                           })`}
