@@ -484,10 +484,10 @@ const Agenda = () => {
   return (
     <div className="w-screen text-[#757575] mx-auto p-5">
       <div className="flex justify-between  items-center mb-4">
-        <h1 className="text-2xl  font-bold text-[#6c1e4f] ">Agenda</h1>
+        <h1 className="text-2xl  font-bold text-[#E91E63] ">Agenda</h1>
         <button
           onClick={() => openModal('add')}
-          className="bg-[#6c1e4f] text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
+          className="bg-[#E91E63] text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
           title="Novo Agendamento"
           disabled={!profissionalSelecionado} // Disable if no professional selected
         >
@@ -612,8 +612,11 @@ const Agenda = () => {
             </thead>
             <tbody>
               {agenda.map((linha, rowIndex) => (
-                <tr key={linha.horario} className="hover:bg-gray-50">
-                  <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
+                <tr
+                  key={linha.horario}
+                  className="hover:bg-gray-50 bg-zinc-200"
+                >
+                  <td className="border border-gray-400 p-2 font-medium sticky left-0 bg-zinc-200 z-10">
                     {linha.horario}
                   </td>
                   {/* Iterate through dateKeys to ensure consistent column order */}
@@ -639,7 +642,7 @@ const Agenda = () => {
                     // --- Render Cell Content ---
                     let cellContent;
                     let cellClassName =
-                      'border border-gray-300 p-0 text-center h-12 align-top'; // Default class, align top for rowspan
+                      'border border-gray-400 p-0 text-center h-12 align-top'; // Default class, align top for rowspan
 
                     if (slot?.ocupado === null) {
                       cellContent = (
