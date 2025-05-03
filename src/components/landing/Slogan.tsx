@@ -33,7 +33,7 @@ export default function Slogan() {
             💅 Sua beleza é nossa motivação 💅
           </p>
           <Link
-            href="/admin"
+            href="/admin/agenda"
             className="
                             bg-gradient-to-r from-pink-600 to-pink-950
                             text-white font-semibold text-base md:text-lg

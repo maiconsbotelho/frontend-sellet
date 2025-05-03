@@ -8,7 +8,6 @@ export default function AdminLayout({
 }>) {
   return (
     <div className="flex flex-col items-center justify-start ">
-      <Header />
       {children}
       <Nav />
     </div>

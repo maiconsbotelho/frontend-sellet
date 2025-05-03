@@ -1,0 +1,47 @@
+'use client';
+
+import { useRouter } from 'next/navigation';
+import React, { useEffect, useState } from 'react';
+import { FaArrowLeft } from 'react-icons/fa';
+import Image from 'next/image';
+import LogoMotivouLevou from '@/../public/logo3.png';
+
+interface Props {
+  title: string;
+  voltarFunc?: (() => void) | null;
+}
+
+export default function HeaderPaginas({ title, voltarFunc = null }: Props) {
+  const router = useRouter();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  return (
+    <div
+      className="p-6 w-screen h-20 flex  justify-between items-center tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
+        "
+    >
+      <div className="flex items-center gap-2">
+        {isClient && (
+          <FaArrowLeft
+            color="var(--text-primary)"
+            className="cursor-pointer"
+            onClick={() => router.back()}
+          />
+        )}
+        <p className="text-lg text-[var(--accent)] font-semibold tracking-tighter">
+          {title}
+        </p>
+      </div>
+      <Image
+        src={LogoMotivouLevou}
+        width={84}
+        height={34}
+        alt="Logo Motivou Levou"
+      />
+    </div>
+  );
+}

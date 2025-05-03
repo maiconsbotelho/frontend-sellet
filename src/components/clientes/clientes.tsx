@@ -191,18 +191,18 @@ export default function ClientesPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 w-screen ">
       <div className="flex justify-between mb-4">
         <input
           type="text"
           placeholder="Pesquisar clientes..."
-          className="border px-3 py-2 rounded flex-grow mr-4"
+          className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <button
           onClick={openAdd}
-          className="bg-blue-600 text-white px-4 py-2 rounded flex items-center hover:bg-blue-700"
+          className="bg-[var(--accent)] text-white px-4 py-2 rounded flex items-center "
         >
           <FaPlus className="mr-2" /> ADD
         </button>
@@ -223,7 +223,7 @@ export default function ClientesPage() {
           filtered.map((c) => (
             <li
               key={c.id}
-              className="flex justify-between items-center border p-3 rounded hover:bg-gray-50"
+              className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)] "
             >
               <div>
                 <span className="font-medium">{c.nome_completo}</span>
@@ -231,7 +231,7 @@ export default function ClientesPage() {
               </div>
               <button
                 onClick={() => openEdit(c)}
-                className="text-green-600 hover:text-green-800 p-1"
+                className="text-[var(--accent)]  p-1"
                 aria-label={`Editar ${c.nome_completo}`}
               >
                 <FaEdit />

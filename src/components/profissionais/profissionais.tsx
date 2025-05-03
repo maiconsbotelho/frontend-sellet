@@ -12,6 +12,7 @@ type Profissional = {
 
 // Define the base URL for your API
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+
 export default function ProfissionaisPage() {
   const [professionals, setProfessionals] = useState<Profissional[]>([]);
   const [filteredProfessionals, setFilteredProfessionals] = useState<
@@ -28,7 +29,7 @@ export default function ProfissionaisPage() {
     password: '', // Password only needed for adding
   });
   const [error, setError] = useState<string | null>(null); // State for error messages
-  const [isLoading, setIsLoading] = useState(true); // Loading state
+  const [isLoading, setIsLoading] = useState(true); // Loading state for initial fetch and actions
 
   useEffect(() => {
     fetchProfessionals();
@@ -48,12 +49,21 @@ export default function ProfissionaisPage() {
     try {
       const res = await fetch(`${API_BASE_URL}/usuario/?tipo=PROFISSIONAL`);
       if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
+        // Try to get more specific error from backend response
+        let errorMsg = `HTTP error! status: ${res.status}`;
+        try {
+          const errorData = await res.json();
+          errorMsg += ` - ${JSON.stringify(errorData)}`;
+        } catch (jsonError) {
+          errorMsg += ` - ${await res
+            .text()
+            .catch(() => 'Could not read response text')}`;
+        }
+        throw new Error(errorMsg);
       }
       const data = await res.json();
       setProfessionals(data);
-      // Initialize filtered list after fetching
-      setFilteredProfessionals(data);
+      setFilteredProfessionals(data); // Initialize filtered list
     } catch (err: any) {
       console.error('Failed to fetch professionals:', err);
       setError(
@@ -67,9 +77,9 @@ export default function ProfissionaisPage() {
   const openAddModal = () => {
     setForm({ email: '', nome_completo: '', password: '' });
     setError(null);
-    setCurrentProfessional(null);
+    setCurrentProfessional(null); // Ensure no professional is selected
     setIsAddOpen(true);
-    setIsEditOpen(false);
+    setIsEditOpen(false); // Ensure edit modal is closed
   };
 
   const openEditModal = (professional: Profissional) => {
@@ -82,7 +92,7 @@ export default function ProfissionaisPage() {
     });
     setError(null);
     setIsEditOpen(true);
-    setIsAddOpen(false);
+    setIsAddOpen(false); // Ensure add modal is closed
   };
 
   const closeModals = () => {
@@ -99,15 +109,14 @@ export default function ProfissionaisPage() {
   const handleAddProfessional = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true); // Indicate loading state
 
     // Basic validation
     if (!form.email || !form.nome_completo || !form.password) {
       setError('Por favor, preencha todos os campos obrigatórios.');
-      setIsLoading(false);
       return;
     }
 
+    setIsLoading(true); // Indicate loading state for the action
     try {
       const res = await fetch(`${API_BASE_URL}/usuario/`, {
         method: 'POST',
@@ -128,7 +137,7 @@ export default function ProfissionaisPage() {
         `Falha ao adicionar profissional: ${err.message || 'Erro desconhecido'}`
       );
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Action finished
     }
   };
 
@@ -138,14 +147,14 @@ export default function ProfissionaisPage() {
     e.preventDefault();
     if (!currentProfessional) return;
     setError(null);
-    setIsLoading(true);
 
     // Basic validation
     if (!form.email || !form.nome_completo) {
       setError('Por favor, preencha nome e email.');
-      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true); // Indicate loading state for the action
 
     // Prepare payload - exclude password
     const payload = {
@@ -177,250 +186,248 @@ export default function ProfissionaisPage() {
         `Falha ao editar profissional: ${err.message || 'Erro desconhecido'}`
       );
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Action finished
     }
   };
 
-  const handleDeleteProfessional = async (professional: Profissional) => {
-    if (!professional) return;
+  const handleDeleteProfessional = async () => {
+    // Now called without argument, uses currentProfessional from state
+    if (!currentProfessional) return;
 
     if (
       !window.confirm(
-        `Tem certeza que deseja excluir o profissional "${professional.nome_completo}"?`
+        `Tem certeza que deseja excluir o profissional "${currentProfessional.nome_completo}"?`
       )
     ) {
       return; // Stop if user cancels
     }
 
     setError(null);
-    setIsLoading(true);
+    setIsLoading(true); // Indicate loading state for the action
     try {
-      const res = await fetch(`${API_BASE_URL}/usuario/${professional.id}/`, {
-        method: 'DELETE',
-      });
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({})); // Try to parse error response
+      const res = await fetch(
+        `${API_BASE_URL}/usuario/${currentProfessional.id}/`,
+        {
+          method: 'DELETE',
+        }
+      );
+      if (!res.ok && res.status !== 204) {
+        // Handle cases where DELETE might return content (like 204 No Content is ok)
+        const errorData = await res
+          .json()
+          .catch(() => ({ message: 'Could not parse error JSON' }));
         throw new Error(
           `HTTP error! status: ${res.status} - ${JSON.stringify(errorData)}`
         );
       }
       await fetchProfessionals(); // Fetch updated list
-      closeModals(); // Close any open modal after deletion
+      closeModals(); // Close the edit modal after deletion
     } catch (err: any) {
       console.error('Failed to delete professional:', err);
+      // Keep the modal open to show the error
       setError(
         `Falha ao excluir profissional: ${err.message || 'Erro desconhecido'}`
       );
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Action finished
     }
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Gerenciar Profissionais
-      </h1>
-
-      {/* Error Display Area */}
-      {error && !isAddOpen && !isEditOpen && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded">
-          <strong>Erro:</strong> {error}
-        </div>
-      )}
-
-      {/* Search and Add Button */}
-      <div className="flex justify-between items-center mb-6">
+    // Adjusted main container padding
+    <div className="p-6 w-screen">
+      {/* Search and Add Button - Adjusted styles */}
+      <div className="flex justify-between mb-4">
         <input
           type="text"
-          placeholder="Buscar profissional..."
+          placeholder="Pesquisar profissionais..."
+          className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-1/3"
+          disabled={isLoading && professionals.length === 0} // Disable search only during initial load
         />
         <button
           onClick={openAddModal}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out flex items-center" // Added flex and items-center
-          disabled={isLoading}
-          aria-label="Adicionar novo profissional" // Added aria-label
+          className="bg-[var(--accent)] text-white px-4 py-2 rounded flex items-center hover:bg-pink-700 transition duration-150 ease-in-out disabled:opacity-50"
+          disabled={isLoading} // Disable button during any loading state
+          aria-label="Adicionar novo profissional"
         >
-          <FaPlus className="mr-2" /> {/* Added icon */}
-          Adicionar Profissional
+          <FaPlus className="mr-2" /> ADD
         </button>
       </div>
 
-      {/* Loading Indicator */}
-      {isLoading && (
-        <p className="text-center text-gray-500">Carregando profissionais...</p>
-      )}
-
-      {/* Professionals Table */}
-      {!isLoading && filteredProfessionals.length === 0 && (
-        <p className="text-center text-gray-500 mt-4">
-          Nenhum profissional encontrado.
-        </p>
-      )}
-      {!isLoading && filteredProfessionals.length > 0 && (
-        <div className="overflow-x-auto shadow-md rounded-lg">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-100">
-              <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Nome Completo
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Email
-                </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-                >
-                  Ações
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {filteredProfessionals.map((professional) => (
-                <tr key={professional.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {professional.nome_completo}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {professional.email}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                    {' '}
-                    {/* Added space-x-2 */}
-                    <button
-                      onClick={() => openEditModal(professional)}
-                      className="text-indigo-600 hover:text-indigo-900 p-1 transition duration-150 ease-in-out disabled:opacity-50" // Adjusted styling
-                      disabled={isLoading}
-                      aria-label={`Editar ${professional.nome_completo}`} // Added aria-label
-                    >
-                      <FaEdit size={18} /> {/* Replaced text with icon */}
-                    </button>
-                    <button
-                      onClick={() => handleDeleteProfessional(professional)}
-                      className="text-red-600 hover:text-red-900 p-1 transition duration-150 ease-in-out disabled:opacity-50" // Adjusted styling
-                      disabled={isLoading}
-                      aria-label={`Excluir ${professional.nome_completo}`} // Added aria-label
-                    >
-                      <FaTrash size={18} /> {/* Replaced text with icon */}
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* General Error Display - Adjusted style */}
+      {error && !isAddOpen && !isEditOpen && (
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
+          <span className="block sm:inline">{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="absolute top-0 bottom-0 right-0 px-4 py-3"
+            aria-label="Fechar erro"
+          >
+            <span className="text-xl">×</span>
+          </button>
         </div>
       )}
 
-      {/* Add Professional Modal */}
+      {/* Loading Indicator - Simplified */}
+      {isLoading && professionals.length === 0 && (
+        <div className="text-center py-4 text-gray-500">Carregando...</div>
+      )}
+
+      {/* Professionals List - Replaced table with ul */}
+      {!isLoading && filteredProfessionals.length === 0 && !error && (
+        <div className="text-center text-gray-500 py-4">
+          {search
+            ? `Nenhum profissional encontrado para "${search}".`
+            : 'Nenhum profissional cadastrado.'}
+        </div>
+      )}
+
+      {!error && filteredProfessionals.length > 0 && (
+        <ul className="space-y-2">
+          {filteredProfessionals.map((p) => (
+            <li
+              key={p.id}
+              className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)] "
+            >
+              <div>
+                <span className="font-medium text-gray-900">
+                  {p.nome_completo}
+                </span>
+                <span className="text-sm text-gray-500 block">{p.email}</span>
+              </div>
+              {/* Action Buttons - Adjusted styles and icons */}
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => openEditModal(p)}
+                  className="text-[var(--accent)] hover:text-pink-700 p-1 transition duration-150 ease-in-out disabled:opacity-50"
+                  aria-label={`Editar ${p.nome_completo}`}
+                  disabled={isLoading} // Disable during actions
+                >
+                  <FaEdit size={18} />
+                </button>
+                {/* Delete button moved to Edit Modal */}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* ADD MODAL - Adjusted styles */}
       {isAddOpen && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-          <div className="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-auto">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Adicionar Novo Profissional
-            </h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4">
+          <form
+            onSubmit={handleAddProfessional}
+            className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black my-auto" // Adjusted modal style
+          >
+            <h2 className="text-xl font-semibold mb-4">Novo Profissional</h2>
+            {/* Modal-specific errors */}
             {error && (
-              <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded">
-                {error}
+              <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3"
+                role="alert"
+              >
+                <span className="block sm:inline">{error}</span>
               </div>
             )}
-            <form onSubmit={handleAddProfessional}>
-              <div className="mb-4">
-                <label
-                  htmlFor="nome_completo_add"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Nome Completo
-                </label>
-                <input
-                  type="text"
-                  id="nome_completo_add"
-                  name="nome_completo"
-                  value={form.nome_completo}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="email_add"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Email
-                </label>
-                <input
-                  type="email"
-                  id="email_add"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-              <div className="mb-6">
-                <label
-                  htmlFor="password_add"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Senha
-                </label>
-                <input
-                  type="password"
-                  id="password_add"
-                  name="password"
-                  value={form.password}
-                  onChange={handleChange}
-                  required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                />
-              </div>
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={closeModals}
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-150 ease-in-out disabled:opacity-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Adicionando...' : 'Adicionar'}
-                </button>
-              </div>
-            </form>
-          </div>
+            <div className="mb-3">
+              <label
+                htmlFor="nome_completo_add"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Nome Completo
+              </label>
+              <input
+                id="nome_completo_add"
+                name="nome_completo"
+                type="text"
+                value={form.nome_completo}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)]" // Adjusted input style
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label
+                htmlFor="email_add"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Email
+              </label>
+              <input
+                id="email_add"
+                name="email"
+                type="email"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)]" // Adjusted input style
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label
+                htmlFor="password_add"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Senha
+              </label>
+              <input
+                id="password_add"
+                name="password"
+                type="password"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)]" // Adjusted input style
+                required
+              />
+            </div>
+            {/* Action Buttons - Adjusted styles */}
+            <div className="flex justify-end space-x-2">
+              <button
+                type="button"
+                onClick={closeModals}
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
+                disabled={isLoading} // Disable during action
+              >
+                Cancelar
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-pink-700 disabled:opacity-50"
+                disabled={isLoading} // Disable during action
+              >
+                {isLoading ? 'Adicionando...' : 'Adicionar'}
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
-      {/* Edit Professional Modal */}
-      {isEditOpen && currentProfessional && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex justify-center items-center">
-          <div className="relative bg-white p-8 rounded-lg shadow-xl w-full max-w-md mx-auto">
-            <h2 className="text-2xl font-semibold mb-6 text-gray-800">
-              Editar Profissional
-            </h2>
-            {error && (
-              <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded">
-                {error}
-              </div>
-            )}
-            <form onSubmit={handleEditProfessional}>
-              <div className="mb-4">
+      {/* EDIT MODAL - Adjusted styles */}
+      {isEditOpen &&
+        currentProfessional && ( // Ensure currentProfessional is not null
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4">
+            <form
+              onSubmit={handleEditProfessional}
+              className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black my-auto" // Adjusted modal style
+            >
+              <h2 className="text-xl font-semibold mb-4">
+                Editar Profissional
+              </h2>
+              {/* Modal-specific errors */}
+              {error && (
+                <div
+                  className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3"
+                  role="alert"
+                >
+                  <span className="block sm:inline">{error}</span>
+                </div>
+              )}
+              <div className="mb-3">
                 <label
                   htmlFor="nome_completo_edit"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -428,16 +435,16 @@ export default function ProfissionaisPage() {
                   Nome Completo
                 </label>
                 <input
-                  type="text"
                   id="nome_completo_edit"
                   name="nome_completo"
+                  type="text"
                   value={form.nome_completo}
                   onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)]" // Adjusted input style
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
-              <div className="mb-6">
+              <div className="mb-4">
                 <label
                   htmlFor="email_edit"
                   className="block text-sm font-medium text-gray-700 mb-1"
@@ -445,37 +452,50 @@ export default function ProfissionaisPage() {
                   Email
                 </label>
                 <input
-                  type="email"
                   id="email_edit"
                   name="email"
+                  type="email"
                   value={form.email}
                   onChange={handleChange}
+                  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)]" // Adjusted input style
                   required
-                  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 />
               </div>
               {/* Password field is intentionally omitted for editing */}
-              <div className="flex justify-end space-x-3">
+
+              {/* Action Buttons - Adjusted styles and added Delete */}
+              <div className="flex justify-between items-center mt-6">
+                {/* Delete Button */}
                 <button
                   type="button"
-                  onClick={closeModals}
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 transition duration-150 ease-in-out disabled:opacity-50"
+                  onClick={handleDeleteProfessional} // Calls the delete handler
+                  className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700 disabled:opacity-50"
+                  disabled={isLoading} // Disable during action
                 >
-                  Cancelar
+                  <FaTrash className="mr-2" /> Excluir
                 </button>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="px-4 py-2 bg-green-600 text-white rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoading ? 'Salvando...' : 'Salvar Alterações'}
-                </button>
+                {/* Cancel and Save Buttons */}
+                <div className="space-x-2">
+                  <button
+                    type="button"
+                    onClick={closeModals}
+                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
+                    disabled={isLoading} // Disable during action
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 disabled:opacity-50" // Kept green for Save Changes consistency
+                    disabled={isLoading} // Disable during action
+                  >
+                    {isLoading ? 'Salvando...' : 'Salvar Alterações'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
-        </div>
-      )}
+        )}
     </div>
   );
 }

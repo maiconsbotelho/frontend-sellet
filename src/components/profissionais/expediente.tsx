@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaEdit, FaPlus, FaTrash, FaClock } from 'react-icons/fa';
+import { FaClock, FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 
 // --- Definições de Tipos ---
 type Profissional = {
@@ -404,8 +404,8 @@ export default function ExpedientePage() {
       return (
         <div
           key={index}
-          className={`mb-4 p-4 border rounded bg-white shadow-sm transition-colors duration-150 ${
-            isClickable ? 'cursor-pointer hover:bg-blue-50' : ''
+          className={`p-3 border rounded bg-[var(--secondary)] border-[var(--primary)] transition-colors duration-150 ${
+            isClickable ? 'cursor-pointer hover:bg-pink-100' : '' // Adjusted hover color
           } ${isSubmitting ? 'opacity-70' : ''}`} // Diminui a opacidade se estiver enviando
           onClick={
             isClickable ? () => openModal('add', undefined, index) : undefined
@@ -425,40 +425,47 @@ export default function ExpedientePage() {
           }
           aria-disabled={isSubmitting} // Indica estado desabilitado durante o envio
         >
-          <h3 className="text-lg font-semibold mb-2 text-gray-700">
+          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+            {' '}
+            {/* Adjusted text color */}
             {diaNome}
           </h3>
           {hasExpediente ? (
-            <ul className="space-y-2">
+            <ul className="space-y-1">
+              {' '}
+              {/* Reduced spacing */}
               {groupedExpedientes[index].map((exp) => (
                 <li
                   key={exp.id}
-                  className="flex justify-between items-center p-2 border-b last:border-b-0"
+                  className="flex justify-between items-center py-1" // Adjusted padding
                 >
-                  <span className="text-gray-800">
-                    <FaClock className="inline mr-2 text-blue-500" />
+                  <span className="text-gray-700">
+                    {' '}
+                    {/* Adjusted text color */}
+                    <FaClock className="inline mr-2 text-[var(--accent)]" />{' '}
+                    {/* Use accent color */}
                     {exp.inicio} - {exp.fim}
                   </span>
                   <div className="space-x-2">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Impede que o clique no botão acione o clique no card do dia
+                        e.stopPropagation(); // Prevent triggering the div's onClick
                         openModal('edit', exp);
                       }}
-                      className="text-blue-600 hover:text-blue-800 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-[var(--accent)] hover:text-pink-700 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
                       aria-label={`Editar horário ${exp.inicio}-${exp.fim} de ${diaNome}`}
-                      disabled={isLoading || isSubmitting} // Desabilita se estiver carregando ou enviando
+                      disabled={isLoading || isSubmitting}
                     >
                       <FaEdit />
                     </button>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Impede que o clique no botão acione o clique no card do dia
+                        e.stopPropagation(); // Prevent triggering the div's onClick
                         handleDelete(exp.id);
                       }}
                       className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
                       aria-label={`Excluir horário ${exp.inicio}-${exp.fim} de ${diaNome}`}
-                      disabled={isLoading || isSubmitting} // Desabilita se estiver carregando ou enviando
+                      disabled={isLoading || isSubmitting}
                     >
                       <FaTrash />
                     </button>
@@ -467,7 +474,7 @@ export default function ExpedientePage() {
               ))}
             </ul>
           ) : (
-            <div className="flex items-center justify-center text-sm text-gray-400 italic h-10">
+            <div className="flex items-center justify-center text-sm text-gray-500 italic h-10">
               {!isLoading && selectedProfissionalId && (
                 <>
                   <FaPlus className="mr-2" /> Clique para adicionar horário
@@ -478,7 +485,6 @@ export default function ExpedientePage() {
                   !selectedProfissionalId &&
                   'Selecione um profissional' // Não deve acontecer devido à verificação externa
               }
-              {/* Condições comentadas podem ser redundantes */}
             </div>
           )}
         </div>
@@ -487,21 +493,31 @@ export default function ExpedientePage() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Gerenciar Expediente
-      </h1>
-
+    <div className="p-6  w-screen">
       {/* Exibição de Erro Geral */}
       {error && !isModalOpen && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 border border-red-400 rounded">
-          {error}
+        <div
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4"
+          role="alert"
+        >
+          <span className="block sm:inline">{error}</span>
+          <button
+            onClick={() => setError(null)}
+            className="absolute top-0 bottom-0 right-0 px-4 py-3"
+            aria-label="Fechar erro"
+          >
+            <span className="text-xl">×</span>
+          </button>
         </div>
       )}
-
-      {/* Seleção de Profissional e Botão Adicionar */}
-      <div className="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 p-4 bg-white rounded shadow">
-        <div className="flex-grow w-full sm:w-auto">
+      {/* Seleção de Profissional e Botão Adicionar (Horizontal Layout) */}
+      <div className="mb-6 flex items-end gap-4">
+        {' '}
+        {/* Use flex and items-end */}
+        {/* Select Container */}
+        <div className="flex-grow">
+          {' '}
+          {/* Takes available space */}
           <label
             htmlFor="profissional"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -513,8 +529,8 @@ export default function ExpedientePage() {
             name="profissional"
             value={selectedProfissionalId || ''}
             onChange={handleProfissionalChange}
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-200"
-            disabled={isLoading || isSubmitting || profissionais.length === 0} // Desabilita durante carregamento/envio ou se não houver profissionais
+            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-200 text-[var(--text-secondary)] bg-white"
+            disabled={isLoading || isSubmitting || profissionais.length === 0}
           >
             <option value="" disabled>
               {isLoading && profissionais.length === 0
@@ -533,34 +549,41 @@ export default function ExpedientePage() {
             </p>
           )}
         </div>
+        {/* Add Button */}
         <button
           onClick={() => openModal('add')}
-          disabled={!selectedProfissionalId || isLoading || isSubmitting} // Desabilita durante carregamento/envio ou se nenhum profissional selecionado
-          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded flex items-center justify-center hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!selectedProfissionalId || isLoading || isSubmitting}
+          className="flex-shrink-0 bg-[var(--accent)] text-white px-4 py-2 rounded flex items-center justify-center hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out" // Use flex-shrink-0
+          aria-label="Adicionar novo horário de expediente"
         >
-          <FaPlus className="mr-2" /> Adicionar Horário
+          <FaPlus className="mr-2" /> ADD {/* Changed text */}
         </button>
       </div>
-
       {/* Exibição dos Expedientes */}
-      <div className="space-y-4">{renderExpedientes()}</div>
-
+      <div className="space-y-2">{renderExpedientes()}</div>
       {/* MODAL ADICIONAR/EDITAR */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4">
+          {' '}
+          {/* Adjusted overlay */}
           <form
             onSubmit={handleModalSubmit}
-            className="bg-white p-6 rounded-lg shadow-xl w-full max-w-md border border-gray-200"
+            className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black my-auto" // Adjusted modal container
           >
-            <h2 className="text-xl font-semibold mb-5 text-gray-800 border-b pb-3">
+            <h2 className="text-xl font-semibold mb-4">
+              {' '}
+              {/* Adjusted title style */}
               {modalMode === 'add' ? 'Adicionar Novo' : 'Editar'} Horário de
               Expediente
             </h2>
 
             {/* Exibição de Erro do Modal */}
             {modalError && (
-              <div className="mb-4 p-3 bg-red-100 text-red-700 border border-red-300 rounded text-sm">
-                {modalError}
+              <div
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3" // Adjusted error style
+                role="alert"
+              >
+                <span className="block sm:inline">{modalError}</span>
               </div>
             )}
 
@@ -571,10 +594,14 @@ export default function ExpedientePage() {
               value={modalFormData.profissional}
             />
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-600 mb-1">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {' '}
+                {/* Adjusted label color */}
                 Profissional
               </label>
-              <p className="text-gray-900 bg-gray-100 px-3 py-2 rounded border border-gray-200">
+              <p className="text-gray-900 bg-gray-100 px-3 py-2 rounded border border-[var(--border-primary)]">
+                {' '}
+                {/* Adjusted border */}
                 {profissionais.find(
                   (p) => String(p.id) === modalFormData.profissional
                 )?.nome_completo || 'N/A'}
@@ -585,7 +612,7 @@ export default function ExpedientePage() {
             <div className="mb-4">
               <label
                 htmlFor="dia_semana"
-                className="block text-sm font-medium text-gray-600 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1" // Adjusted label color
               >
                 Dia da Semana <span className="text-red-500">*</span>
               </label>
@@ -594,11 +621,12 @@ export default function ExpedientePage() {
                 name="dia_semana"
                 value={modalFormData.dia_semana}
                 onChange={handleModalChange}
-                className={`w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] ${
+                  // Adjusted styles
                   modalMode === 'edit' ||
                   (modalMode === 'add' && modalFormData.dia_semana !== '')
                     ? 'bg-gray-100 cursor-not-allowed' // Desabilita visualmente se editando ou dia pré-selecionado
-                    : 'bg-white'
+                    : 'bg-white text-[var(--text-secondary)]' // Added text color for normal state
                 }`}
                 required
                 disabled={
@@ -630,7 +658,7 @@ export default function ExpedientePage() {
             <div className="mb-4">
               <label
                 htmlFor="inicio"
-                className="block text-sm font-medium text-gray-600 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1" // Adjusted label color
               >
                 Horário Início <span className="text-red-500">*</span>
               </label>
@@ -640,7 +668,7 @@ export default function ExpedientePage() {
                 name="inicio"
                 value={modalFormData.inicio}
                 onChange={handleModalChange}
-                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white" // Adjusted styles
                 required
                 step="1800" // Intervalo de 30 minutos
                 disabled={isSubmitting} // Desabilita se enviando
@@ -651,7 +679,7 @@ export default function ExpedientePage() {
             <div className="mb-5">
               <label
                 htmlFor="fim"
-                className="block text-sm font-medium text-gray-600 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1" // Adjusted label color
               >
                 Horário Fim <span className="text-red-500">*</span>
               </label>
@@ -661,7 +689,7 @@ export default function ExpedientePage() {
                 name="fim"
                 value={modalFormData.fim}
                 onChange={handleModalChange}
-                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white" // Adjusted styles
                 required
                 step="1800" // Intervalo de 30 minutos
                 disabled={isSubmitting} // Desabilita se enviando
@@ -672,21 +700,32 @@ export default function ExpedientePage() {
             </div>
 
             {/* Botões de Ação */}
-            <div className="flex justify-end space-x-3 border-t pt-4">
+            <div className="flex justify-end space-x-2 mt-6">
+              {' '}
+              {/* Adjusted spacing and margin */}
               <button
                 type="button"
                 onClick={closeModal}
-                className="px-4 py-2 rounded bg-gray-200 text-gray-700 hover:bg-gray-300 transition-colors disabled:opacity-70"
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50 transition-colors" // Adjusted styles
                 disabled={isSubmitting} // Desabilita cancelar se enviando
               >
                 Cancelar
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-wait transition-colors"
+                className={`px-4 py-2 rounded text-white disabled:opacity-50 disabled:cursor-wait transition-colors ${
+                  // Use accent for add, green for edit
+                  modalMode === 'add'
+                    ? 'bg-[var(--accent)] hover:bg-pink-700'
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
                 disabled={isSubmitting} // Desabilita salvar se enviando
               >
-                {isSubmitting ? 'Salvando...' : 'Salvar'}
+                {isSubmitting
+                  ? 'Salvando...'
+                  : modalMode === 'add'
+                  ? 'Adicionar'
+                  : 'Salvar Alterações'}
               </button>
             </div>
           </form>

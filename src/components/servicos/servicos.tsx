@@ -358,21 +358,21 @@ export default function ServicosPage() {
   };
 
   return (
-    <div className="p-6">
+    <div className="p-6 w-screen">
       {/* ... (Search, Add Button, Loading, General Error Display remain the same) ... */}
       <div className="flex justify-between mb-4">
         {/* ... (input and add button remain the same) ... */}
         <input
           type="text"
           placeholder="Pesquisar serviços..."
-          className="border px-3 py-2 rounded flex-grow mr-4"
+          className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           disabled={isLoading}
         />
         <button
           onClick={openAddModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded flex items-center hover:bg-blue-700 disabled:opacity-50"
+          className="bg-[var(--accent)] text-white px-4 py-2 rounded flex items-center "
           aria-label="Adicionar novo serviço"
           disabled={isLoading}
         >
@@ -407,7 +407,7 @@ export default function ServicosPage() {
             filteredServicos.map((s) => (
               <li
                 key={s.id}
-                className="flex justify-between items-center border p-3 rounded hover:bg-gray-50"
+                className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)] "
               >
                 {/* ... (service info display remains the same) ... */}
                 <div>
@@ -424,7 +424,7 @@ export default function ServicosPage() {
                 <div className="flex space-x-2">
                   <button
                     onClick={() => openEditModal(s)}
-                    className="text-blue-600 hover:text-blue-800 p-1 disabled:opacity-50"
+                    className="text-[var(--accent)]  p-1"
                     aria-label={`Editar ${s.nome}`}
                     disabled={isLoading}
                   >

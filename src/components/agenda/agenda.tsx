@@ -484,10 +484,10 @@ const Agenda = () => {
   return (
     <div className="w-screen text-[#757575] mx-auto p-5">
       <div className="flex justify-between  items-center mb-4">
-        <h1 className="text-2xl  font-bold text-[#E91E63] ">Agenda</h1>
+        <h1 className="text-2xl  font-bold text-[var(--accent)] ">Agenda</h1>
         <button
           onClick={() => openModal('add')}
-          className="bg-[#E91E63] text-white p-2 rounded-full hover:bg-[var(--secondary)] disabled:opacity-50"
+          className="bg-[var(--accent)] text-white p-2 rounded-full disabled:opacity-50"
           title="Novo Agendamento"
           disabled={!profissionalSelecionado} // Disable if no professional selected
         >
@@ -509,7 +509,7 @@ const Agenda = () => {
             id="profissional"
             value={profissionalSelecionado || ''}
             onChange={handleProfissionalChange}
-            className="w-full p-2 border border-[#E0E0E0] bg-[var(--primary)] rounded-md text-[#fff]"
+            className="w-full p-2 border border-[#E0E0E0] bg-[var(--primary)] rounded-md text-[var(--text-primary)]"
           >
             {/* Add a default "Selecione" option */}
             <option value="" disabled={profissionais.length > 0}>
@@ -568,7 +568,7 @@ const Agenda = () => {
         <div className="flex justify-end">
           <button
             onClick={alternarVisao}
-            className=" text-[var(--secondary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
+            className=" text-[var(--text-primary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10" // Match input height
           >
             Ver {visao === 'semana' ? 'Dia' : 'Semana'}
           </button>
@@ -590,7 +590,7 @@ const Agenda = () => {
         <div className="overflow-x-auto ">
           <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
             <thead>
-              <tr className="bg-[var(--primary)]  text-[var(--secondary)]">
+              <tr className="bg-[var(--primary)]  text-[var(--text-primary)]">
                 <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
                   Horário
                 </th>

@@ -10,9 +10,9 @@ import { GiCaptainHatProfile } from 'react-icons/gi';
 const navItems = [
   {
     label: 'Agenda',
-    route: '/admin',
+    route: '/admin/agenda',
     icon: <IoCalendarOutline className="text-3xl" />,
-    activePath: '/admin',
+    activePath: '/admin/agenda',
   },
   {
     label: 'Clientes',
@@ -55,13 +55,18 @@ export default function Nav() {
           <div
             key={index}
             onClick={() => router.push(item.route)}
-            className="flex flex-col flex-shrink-0 justify-center items-center gap-1 cursor-pointer w-20" // Adicionado flex-shrink-0 e w-20 (ajuste conforme necessário)
+            className={`flex flex-col flex-shrink-0 justify-center items-center gap-1 cursor-pointer w-20 ${
+              // Apply accent color to the icon as well if active
+              path === item.activePath ? 'text-[var(--accent)]' : ''
+            }`}
             aria-label={item.label}
           >
             {item.icon}
             <p
               className={`text-center ${
-                path === item.activePath ? 'text-principal font-semibold' : '' // Adicionado font-semibold para destaque
+                path === item.activePath
+                  ? 'text-[var(--accent)] font-semibold' // Use var(--accent) for active text color
+                  : 'text-[var(--secondary)]' // Ensure non-active items use secondary color
               }`}
             >
               {item.label}
