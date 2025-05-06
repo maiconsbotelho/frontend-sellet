@@ -1,7 +1,4 @@
 import Agenda from '@/components/agenda/agenda';
-import Dashboard from '@/components/dashboard/dashboard';
-import DashboardSemanal from '@/components/dashboard/dashboardAgendamentos';
-import Nav from '@/components/ui/nav';
 
 export default function AgendaPage() {
   return (
