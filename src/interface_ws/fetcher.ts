@@ -1,5 +1,5 @@
 // utils/fetcher.ts
-import { isJson } from '@/util/helpers';
+import { isJson } from '@/utils/helpers';
 
 export const getFetcher = async (url: string, requestConfigs?: RequestInit) => {
   try {

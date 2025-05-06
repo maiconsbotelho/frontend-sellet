@@ -8,6 +8,14 @@ type Client = {
   id: number;
   nome_completo: string;
   email: string;
+  // Add optional fields
+  telefone?: string | null;
+  cpf?: string | null;
+  cep?: string | null;
+  rua?: string | null;
+  numero_casa?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
 };
 
 // Define the base URL for your API
@@ -23,6 +31,14 @@ export default function ClientesPage() {
     email: '',
     nome_completo: '',
     password: '',
+    // Add new fields to form state
+    telefone: '',
+    cpf: '',
+    cep: '',
+    rua: '',
+    numero_casa: '',
+    cidade: '',
+    uf: '',
   });
   const [error, setError] = useState<string | null>(null); // State for error messages
 
@@ -69,16 +85,41 @@ export default function ClientesPage() {
   };
 
   const openAdd = () => {
-    setForm({ email: '', nome_completo: '', password: '' });
+    setForm({
+      email: '',
+      nome_completo: '',
+      password: '',
+      // Reset new fields
+      telefone: '',
+      cpf: '',
+      cep: '',
+      rua: '',
+      numero_casa: '',
+      cidade: '',
+      uf: '',
+    });
     setError(null);
     setIsAddOpen(true);
   };
   const openEdit = (c: Client) => {
     setCurrent(c);
-    setForm({ email: c.email, nome_completo: c.nome_completo, password: '' });
+    // Populate form with client data, including optional fields
+    setForm({
+      email: c.email,
+      nome_completo: c.nome_completo,
+      password: '', // Password is not typically edited here
+      telefone: c.telefone || '',
+      cpf: c.cpf || '',
+      cep: c.cep || '',
+      rua: c.rua || '',
+      numero_casa: c.numero_casa || '',
+      cidade: c.cidade || '',
+      uf: c.uf || '',
+    });
     setError(null);
     setIsEditOpen(true);
   };
+
   const closeModals = () => {
     setIsAddOpen(false);
     setIsEditOpen(false);
@@ -92,12 +133,34 @@ export default function ClientesPage() {
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
+
+    // Prepare data, sending null for empty optional fields
+    const postData = {
+      ...form,
+      tipo: 'CLIENTE',
+      telefone: form.telefone || null,
+      cpf: form.cpf || null,
+      cep: form.cep || null,
+      rua: form.rua || null,
+      numero_casa: form.numero_casa || null,
+      cidade: form.cidade || null,
+      uf: form.uf || null,
+    };
+
+    // Remove password if it's empty - adjust if password IS required
+    // If password IS required, you should validate it's not empty before this point
+    if (!postData.password) {
+      // Decide if you want to remove it or handle validation error
+      // delete postData.password; // Example: remove if empty
+      // Or: setError("Password is required"); return;
+    }
+
     try {
       // Use the full API URL
       const res = await fetch(`${API_BASE_URL}/usuario/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, tipo: 'CLIENTE' }),
+        body: JSON.stringify(postData),
       });
       if (!res.ok) {
         const errorData = await res
@@ -121,16 +184,28 @@ export default function ClientesPage() {
     e.preventDefault();
     if (!current) return; // Check if current client is set
     setError(null);
+
+    const putData = {
+      email: form.email,
+      nome_completo: form.nome_completo,
+      tipo: 'CLIENTE', // Ensure type is sent if required by backend for PUT
+      telefone: form.telefone || null,
+      cpf: form.cpf || null,
+      cep: form.cep || null,
+      rua: form.rua || null,
+      numero_casa: form.numero_casa || null,
+      cidade: form.cidade || null,
+      uf: form.uf || null,
+      // Do not include password unless it's being changed
+    };
+
     try {
       // Use the full API URL
       const res = await fetch(`${API_BASE_URL}/usuario/${current.id}/`, {
-        method: 'PUT',
+        method: 'PUT', // Consider using PATCH if you only want to send changed fields
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: form.email,
-          nome_completo: form.nome_completo,
-          tipo: 'CLIENTE', // Ensure type is sent if required by backend for PUT
-        }),
+        // FIX: Use the prepared putData object
+        body: JSON.stringify(putData),
       });
       if (!res.ok) {
         const errorData = await res
@@ -247,49 +322,106 @@ export default function ClientesPage() {
 
       {/* ADD MODAL */}
       {isAddOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto py-10">
+          {/* Added overflow-y-auto and py-10 for scroll */}
           <form
             onSubmit={handleAdd}
-            className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black" // Responsive width
+            className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black" // Increased max-w-lg
           >
             <h2 className="text-xl font-semibold mb-4">Novo Cliente</h2>
-            {/* Display modal-specific errors */}
-            {error && (
-              <div
-                className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3"
-                role="alert"
-              >
-                <span className="block sm:inline">{error}</span>
-              </div>
-            )}
-            <input
-              name="email"
-              type="email"
-              placeholder="E-mail"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <input
-              name="nome_completo"
-              type="text"
-              placeholder="Nome Completo"
-              value={form.nome_completo}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-            <input
-              name="password"
-              type="password"
-              placeholder="Senha"
-              value={form.password}
-              onChange={handleChange}
-              className="w-full border px-3 py-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
+            {/* ... error display ... */}
+            {/* Grid layout for better spacing */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <input
+                name="nome_completo"
+                type="text"
+                placeholder="Nome Completo *"
+                value={form.nome_completo}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                name="email"
+                type="email"
+                placeholder="E-mail *"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <input
+                name="password"
+                type="password"
+                placeholder="Senha *"
+                value={form.password}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required // Keep required for add modal
+              />
+              <input
+                name="telefone"
+                type="tel" // Use type="tel" for phone numbers
+                placeholder="Telefone (Ex: 55519...)"
+                value={form.telefone}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cpf"
+                type="text"
+                placeholder="CPF (somente números)"
+                value={form.cpf}
+                onChange={handleChange}
+                maxLength={11} // Add maxLength
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cep"
+                type="text"
+                placeholder="CEP (somente números)"
+                value={form.cep}
+                onChange={handleChange}
+                maxLength={8} // Add maxLength
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="rua"
+                type="text"
+                placeholder="Rua"
+                value={form.rua}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="numero_casa"
+                type="text"
+                placeholder="Número"
+                value={form.numero_casa}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cidade"
+                type="text"
+                placeholder="Cidade"
+                value={form.cidade}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="uf"
+                type="text"
+                placeholder="UF (Ex: RS)"
+                value={form.uf}
+                onChange={handleChange}
+                maxLength={2} // Add maxLength
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
             <div className="flex justify-end space-x-2">
+              {/* ... buttons ... */}
               <button
                 type="button"
                 onClick={closeModals}
@@ -309,73 +441,127 @@ export default function ClientesPage() {
       )}
 
       {/* EDIT MODAL */}
-      {isEditOpen &&
-        current && ( // Ensure current is not null before rendering
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <form
-              onSubmit={handleEdit}
-              className="bg-white p-6 rounded shadow-lg w-full max-w-md" // Responsive width
-            >
-              <h2 className="text-xl font-semibold mb-4">Editar Cliente</h2>
-              {/* Display modal-specific errors */}
-              {error && (
-                <div
-                  className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3"
-                  role="alert"
-                >
-                  <span className="block sm:inline">{error}</span>
-                </div>
-              )}
-              <input
-                name="email"
-                type="email"
-                placeholder="E-mail"
-                value={form.email}
-                onChange={handleChange}
-                className="w-full border px-3 py-2 mb-3 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
-              />
+      {isEditOpen && current && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto py-10">
+          {/* Added overflow-y-auto and py-10 for scroll */}
+          <form
+            onSubmit={handleEdit}
+            className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black" // Increased max-w-lg
+          >
+            <h2 className="text-xl font-semibold mb-4">Editar Cliente</h2>
+            {/* ... error display ... */}
+            {/* Grid layout for better spacing */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <input
                 name="nome_completo"
                 type="text"
-                placeholder="Nome Completo"
+                placeholder="Nome Completo *"
                 value={form.nome_completo}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 mb-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
-              {/* Password change could be added here if needed */}
+              <input
+                name="email"
+                type="email"
+                placeholder="E-mail *"
+                value={form.email}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              {/* Password field is usually omitted or handled separately in edit forms */}
               {/* <input name="password" type="password" ... /> */}
+              <input
+                name="telefone"
+                type="tel"
+                placeholder="Telefone (Ex: 55519...)"
+                value={form.telefone}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cpf"
+                type="text"
+                placeholder="CPF (somente números)"
+                value={form.cpf}
+                onChange={handleChange}
+                maxLength={11}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cep"
+                type="text"
+                placeholder="CEP (somente números)"
+                value={form.cep}
+                onChange={handleChange}
+                maxLength={8}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="rua"
+                type="text"
+                placeholder="Rua"
+                value={form.rua}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="numero_casa"
+                type="text"
+                placeholder="Número"
+                value={form.numero_casa}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="cidade"
+                type="text"
+                placeholder="Cidade"
+                value={form.cidade}
+                onChange={handleChange}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <input
+                name="uf"
+                type="text"
+                placeholder="UF (Ex: RS)"
+                value={form.uf}
+                onChange={handleChange}
+                maxLength={2}
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
 
-              <div className="flex justify-between items-center">
-                {/* Delete Button */}
+            <div className="flex justify-between items-center">
+              {/* ... delete button ... */}
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700"
+              >
+                <FaTrash className="mr-2" /> Excluir
+              </button>
+              <div className="space-x-2">
+                {/* ... cancel/save buttons ... */}
                 <button
                   type="button"
-                  onClick={handleDelete}
-                  className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700"
+                  onClick={closeModals}
+                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
                 >
-                  <FaTrash className="mr-2" /> Excluir
+                  Cancelar
                 </button>
-                {/* Action Buttons */}
-                <div className="space-x-2">
-                  <button
-                    type="button"
-                    onClick={closeModals}
-                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
-                  >
-                    Salvar
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+                >
+                  Salvar
+                </button>
               </div>
-            </form>
-          </div>
-        )}
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
