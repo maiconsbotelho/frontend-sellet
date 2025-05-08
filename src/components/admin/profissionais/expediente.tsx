@@ -463,7 +463,7 @@ export default function ExpedientePage() {
                         e.stopPropagation(); // Prevent triggering the div's onClick
                         handleDelete(exp.id);
                       }}
-                      className="text-red-600 hover:text-red-800 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="text-gray-400 hover:text-red-800 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
                       aria-label={`Excluir horário ${exp.inicio}-${exp.fim} de ${diaNome}`}
                       disabled={isLoading || isSubmitting}
                     >

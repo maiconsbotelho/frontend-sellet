@@ -148,7 +148,7 @@ export default function CrudModal({
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700"
               disabled={isLoading}
             >
               {isLoading ? 'Salvando...' : 'Salvar'}

@@ -237,7 +237,7 @@ export default function ServicosPage() {
                     setCurrent(s);
                     handleDelete();
                   }}
-                  className="text-red-600 hover:text-red-800 p-1"
+                  className="text-gray-400 hover:text-red-800 p-1"
                   aria-label={`Excluir ${s.nome}`}
                 >
                   <FaTrash />
