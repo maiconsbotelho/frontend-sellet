@@ -2,7 +2,7 @@ import Agenda from '@/components/admin/agenda/agenda';
 
 export default function AgendaPage() {
   return (
-    <div className="flex flex-col items-center justify-start h-screen">
+    <div className="flex mt-[100px] flex-col items-center justify-start h-screen">
       {/* <DashboardSemanal /> */}
       <Agenda />
     </div>

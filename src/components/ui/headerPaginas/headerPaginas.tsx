@@ -21,7 +21,7 @@ export default function HeaderPaginas({ title, voltarFunc = null }: Props) {
 
   return (
     <div
-      className="p-6 w-screen h-20 flex  justify-between items-center tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
+      className="fixed left-0 top-0 p-6 z-30  w-screen h-20 flex  justify-between items-center tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
         "
     >
       <div className="flex items-center gap-2">

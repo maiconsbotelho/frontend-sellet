@@ -22,7 +22,7 @@ export default function Header() {
   return (
     <>
       <header
-        className={`w-screen p-6 h-20 flex flex-col justify-center items-start tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
+        className={`w-screen fixed z-50 p-6 h-20 flex flex-col justify-center items-start tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
         `}
       >
         <div

@@ -493,7 +493,7 @@ export default function ExpedientePage() {
   };
 
   return (
-    <div className="p-6  w-screen">
+    <div className="p-6 pb-44  w-screen">
       {/* Exibição de Erro Geral */}
       {error && !isModalOpen && (
         <div
@@ -511,7 +511,7 @@ export default function ExpedientePage() {
         </div>
       )}
       {/* Seleção de Profissional e Botão Adicionar (Horizontal Layout) */}
-      <div className="mb-6 flex items-end gap-4">
+      <div className="mb-12 flex items-end gap-4">
         {' '}
         {/* Use flex and items-end */}
         {/* Select Container */}

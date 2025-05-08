@@ -47,7 +47,7 @@ export default function CrudModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex pb-[100px] items-center justify-center z-50 overflow-y-auto p-4">
+    <div className="absolute top-[80px] left-0 right-0  pb-[80px]  bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
       <form
         onSubmit={onSubmit}
         className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black"
@@ -137,7 +137,7 @@ export default function CrudModal({
               <FaTrash className="mr-2" /> Excluir
             </button>
           )}
-          <div className="space-x-2 ml-auto">
+          <div className="space-x-2 ml-auto pb-16 pt-4">
             <button
               type="button"
               onClick={onClose}

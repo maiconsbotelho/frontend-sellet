@@ -189,8 +189,8 @@ export default function ClientesPage() {
   ];
 
   return (
-    <div className="p-6 w-screen">
-      <div className="flex justify-between mb-4">
+    <div className="p-6 pb-44 w-screen h-screen overscroll-none flex flex-col">
+      <div className="flex justify-between mb-12">
         <input
           type="text"
           placeholder="Pesquisar clientes..."
@@ -207,7 +207,7 @@ export default function ClientesPage() {
         </div>
       )}
 
-      <ul className="space-y-2">
+      <ul className="flex-1 overflow-y-auto min-h-0 space-y-2 pb-44">
         {filtered.length > 0 ? (
           filtered.map((c) => (
             <li

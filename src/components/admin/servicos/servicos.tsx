@@ -194,7 +194,7 @@ export default function ServicosPage() {
 
   return (
     <div className="p-6 w-screen">
-      <div className="flex justify-between mb-4">
+      <div className="flex justify-between mb-12">
         <input
           type="text"
           placeholder="Pesquisar serviços..."
