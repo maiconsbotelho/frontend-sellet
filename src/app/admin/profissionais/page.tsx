@@ -1,4 +1,4 @@
-import ProfissionaisPage from '@/components/profissionais/profissionais';
+import ProfissionaisPage from '@/components/admin/profissionais/profissionais';
 
 export default function ProfissionalPage() {
   return (

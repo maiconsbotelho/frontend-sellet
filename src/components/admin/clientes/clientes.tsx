@@ -1,0 +1,263 @@
+'use client';
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { FaEdit, FaTrash } from 'react-icons/fa';
+import useApi from '@/hooks/useApi';
+import AddButton from '@/components/shared/addButton';
+import CrudModal from '@/components/shared/crudModal/crudModal';
+import type { FormField } from '@/components/shared/crudModal/crudModal';
+
+// Types
+export type Client = {
+  id: number;
+  nome_completo: string;
+  email: string;
+  password?: string;
+  telefone?: string | null;
+  cpf?: string | null;
+  cep?: string | null;
+  rua?: string | null;
+  numero_casa?: string | null;
+  cidade?: string | null;
+  uf?: string | null;
+  tipo?: string;
+};
+
+export default function ClientesPage() {
+  const {
+    data: clients,
+    isLoading,
+    error: apiError,
+    fetchData: fetchClientsApi,
+    addItem: addClientApi,
+    updateItem: updateClientApi,
+    deleteItem: deleteClientApi,
+    setErrorManually: setApiError,
+  } = useApi<Client>({ entityName: 'cliente', entityPath: '/usuario' });
+
+  const [filtered, setFiltered] = useState<Client[]>([]);
+  const [search, setSearch] = useState('');
+  const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [current, setCurrent] = useState<Client | null>(null);
+  const [form, setForm] = useState<Record<string, any>>({});
+
+  const fetchClients = useCallback(async () => {
+    await fetchClientsApi({ tipo: 'CLIENTE' });
+  }, [fetchClientsApi]);
+
+  useEffect(() => {
+    fetchClients();
+  }, [fetchClients]);
+
+  useEffect(() => {
+    setFiltered(
+      clients.filter((c) =>
+        c.nome_completo.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  }, [search, clients]);
+
+  const openAdd = () => {
+    setForm({
+      email: '',
+      nome_completo: '',
+      password: '',
+      telefone: '',
+      cpf: '',
+      cep: '',
+      rua: '',
+      numero_casa: '',
+      cidade: '',
+      uf: '',
+    });
+    setApiError(null);
+    setIsAddOpen(true);
+  };
+
+  const openEdit = (c: Client) => {
+    setCurrent(c);
+    setForm({
+      email: c.email,
+      nome_completo: c.nome_completo,
+      password: '',
+      telefone: c.telefone || '',
+      cpf: c.cpf || '',
+      cep: c.cep || '',
+      rua: c.rua || '',
+      numero_casa: c.numero_casa || '',
+      cidade: c.cidade || '',
+      uf: c.uf || '',
+    });
+    setApiError(null);
+    setIsEditOpen(true);
+  };
+
+  const closeModals = () => {
+    setIsAddOpen(false);
+    setIsEditOpen(false);
+    setCurrent(null);
+    setApiError(null);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setApiError(null);
+
+    const postData: Partial<Client> = {
+      ...form,
+      tipo: 'CLIENTE',
+      telefone: form.telefone || null,
+      cpf: form.cpf || null,
+      cep: form.cep || null,
+      rua: form.rua || null,
+      numero_casa: form.numero_casa || null,
+      cidade: form.cidade || null,
+      uf: form.uf || null,
+    };
+
+    if (!form.password) delete postData.password;
+
+    const newClient = await addClientApi(postData);
+    if (newClient) {
+      await fetchClients();
+      closeModals();
+    }
+  };
+
+  const handleEdit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!current) return;
+    setApiError(null);
+
+    const putData = {
+      email: form.email,
+      nome_completo: form.nome_completo,
+      tipo: 'CLIENTE',
+      telefone: form.telefone || null,
+      cpf: form.cpf || null,
+      cep: form.cep || null,
+      rua: form.rua || null,
+      numero_casa: form.numero_casa || null,
+      cidade: form.cidade || null,
+      uf: form.uf || null,
+    };
+
+    const updated = await updateClientApi(current.id, putData);
+    if (updated) {
+      await fetchClients();
+      closeModals();
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!current) return;
+    if (
+      !window.confirm(
+        `Tem certeza que deseja excluir ${current.nome_completo}?`
+      )
+    )
+      return;
+    setApiError(null);
+    const success = await deleteClientApi(current.id);
+    if (success) {
+      await fetchClients();
+      closeModals();
+    }
+  };
+
+  const formFields: FormField[] = [
+    {
+      name: 'nome_completo',
+      label: 'Nome Completo',
+      type: 'text',
+      required: true,
+    },
+    { name: 'email', label: 'E-mail', type: 'email', required: true },
+    { name: 'password', label: 'Senha', type: 'password' },
+    { name: 'telefone', label: 'Telefone', type: 'text' },
+    { name: 'cpf', label: 'CPF', type: 'text', maxLength: 11 },
+    { name: 'cep', label: 'CEP', type: 'text', maxLength: 8 },
+    { name: 'rua', label: 'Rua', type: 'text' },
+    { name: 'numero_casa', label: 'Número', type: 'text' },
+    { name: 'cidade', label: 'Cidade', type: 'text' },
+    { name: 'uf', label: 'UF', type: 'text', maxLength: 2 },
+  ];
+
+  return (
+    <div className="p-6 w-screen">
+      <div className="flex justify-between mb-4">
+        <input
+          type="text"
+          placeholder="Pesquisar clientes..."
+          className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <AddButton onClick={openAdd} disabled={isLoading} />
+      </div>
+
+      {apiError && !isAddOpen && !isEditOpen && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <span>{apiError}</span>
+        </div>
+      )}
+
+      <ul className="space-y-2">
+        {filtered.length > 0 ? (
+          filtered.map((c) => (
+            <li
+              key={c.id}
+              className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
+            >
+              <div>
+                <span className="font-medium">{c.nome_completo}</span>
+                <span className="text-sm text-gray-500 block">{c.email}</span>
+              </div>
+              <button
+                onClick={() => openEdit(c)}
+                className="text-[var(--accent)] p-1"
+                aria-label={`Editar ${c.nome_completo}`}
+              >
+                <FaEdit />
+              </button>
+            </li>
+          ))
+        ) : (
+          <li className="text-center text-gray-500 py-4">
+            Nenhum cliente encontrado.
+          </li>
+        )}
+      </ul>
+
+      <CrudModal
+        title="Novo Cliente"
+        isOpen={isAddOpen}
+        formData={form}
+        formFields={formFields}
+        onChange={handleChange}
+        onClose={closeModals}
+        onSubmit={handleAdd}
+        error={apiError}
+        isLoading={isLoading}
+      />
+
+      <CrudModal
+        title="Editar Cliente"
+        isOpen={isEditOpen}
+        formData={form}
+        formFields={formFields.filter((f) => f.name !== 'password')}
+        onChange={handleChange}
+        onClose={closeModals}
+        onSubmit={handleEdit}
+        onDelete={handleDelete}
+        error={apiError}
+        isLoading={isLoading}
+      />
+    </div>
+  );
+}

@@ -1,4 +1,4 @@
-import ServicosPage from '@/components/servicos/servicos';
+import ServicosPage from '@/components/admin/servicos/servicos';
 
 export default function AdminPage() {
   return (
