@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login } from '@/services/authService';
+import { login, getCurrentUser } from '@/services/authService';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -16,9 +16,19 @@ export default function LoginForm() {
     e.preventDefault();
     setErro(null);
     setLoading(true);
+
     try {
       await login(email, password);
-      router.push('/admin/agenda'); // ou outra rota inicial após login
+
+      const user = await getCurrentUser();
+
+      if (user.tipo === 'CLIENTE') {
+        router.push('/cliente');
+      } else if (user.tipo === 'ADMIN') {
+        router.push('/admin/agenda');
+      } else {
+        router.push('/'); // fallback genérico
+      }
     } catch (err: any) {
       setErro(err.message || 'Erro ao fazer login');
     } finally {

@@ -29,3 +29,16 @@ export async function refreshToken() {
     credentials: 'include',
   });
 }
+
+export async function getCurrentUser() {
+  const response = await fetch(`${API_BASE_URL}/usuario/me/`, {
+    method: 'GET',
+    credentials: 'include', // envia cookie com access_token
+  });
+
+  if (!response.ok) {
+    throw new Error('Falha ao obter usuário autenticado');
+  }
+
+  return response.json(); // ← deve retornar { id, nome_completo, email, tipo, ... }
+}
