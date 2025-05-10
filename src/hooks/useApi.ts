@@ -3,8 +3,8 @@ import { useState, useCallback } from 'react';
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 interface ApiConfig<T> {
-  entityName: string; // e.g., "cliente", "profissional" - para mensagens de erro
-  entityPath: string; // e.g., "/usuario"
+  entityName: string;
+  entityPath: string;
   initialData?: T[];
 }
 
@@ -82,7 +82,9 @@ export default function useApi<T extends { id: number | string }>({
       setError(null);
       try {
         const url = buildUrl(undefined, queryParams);
-        const res = await fetch(url);
+        const res = await fetch(url, {
+          credentials: 'include', // <-- Essencial para cookies JWT
+        });
         const resultData = await handleApiResponse(
           res,
           `buscar ${entityName}s`
@@ -111,12 +113,13 @@ export default function useApi<T extends { id: number | string }>({
         const url = buildUrl(undefined, queryParams);
         const res = await fetch(url, {
           method: 'POST',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(itemData),
         });
         const newItem = await handleApiResponse(res, `adicionar ${entityName}`);
         if (newItem?.id) {
-          setData((prev) => [newItem, ...prev]); // mutação local otimista
+          setData((prev) => [newItem, ...prev]);
         }
         return newItem;
       } catch (err: any) {
@@ -146,6 +149,7 @@ export default function useApi<T extends { id: number | string }>({
         const url = buildUrl(id, queryParams);
         const res = await fetch(url, {
           method: 'PUT',
+          credentials: 'include',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(itemData),
         });
@@ -182,9 +186,12 @@ export default function useApi<T extends { id: number | string }>({
       setError(null);
       try {
         const url = buildUrl(id);
-        const res = await fetch(url, { method: 'DELETE' });
+        const res = await fetch(url, {
+          method: 'DELETE',
+          credentials: 'include',
+        });
         await handleApiResponse(res, `excluir ${entityName}`);
-        setData((prev) => prev.filter((item) => item.id !== id)); // remove localmente
+        setData((prev) => prev.filter((item) => item.id !== id));
         return true;
       } catch (err: any) {
         console.error(`Erro ao excluir ${entityName}:`, err);
