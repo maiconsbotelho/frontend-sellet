@@ -10,7 +10,12 @@ import { useCurrentUser } from '@/hooks/useCurrentUser';
 export default function Header() {
   const router = useRouter();
   const { isModalOpen, openModal } = useModal();
-  const user = useCurrentUser(); // Novo hook que busca /usuario/me/
+  const { user, isLoading } = useCurrentUser();
+
+  function capitalize(word: string) {
+    if (!word) return '';
+    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+  }
 
   return (
     <>
@@ -24,13 +29,20 @@ export default function Header() {
         >
           <button
             onClick={openModal}
-            className="flex gap-2 items-start cursor-pointer"
+            className="flex items-center gap-3 cursor-pointer"
           >
-            <Image src="/ui/perfil.svg" width={40} height={40} alt="Perfil" />
-            <div>
-              <p className="text-[10px] text-start">&lt; </p>
-              <p className="font-semibold text-sm capitalize">
-                Olá, {user?.nome_completo?.toLowerCase() || 'visitante'}
+            {user ? (
+              <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold border border-gray-300">
+                {user.nome_completo?.[0]?.toUpperCase() ?? 'U'}
+              </div>
+            ) : (
+              <Image src="/ui/perfil.svg" width={40} height={40} alt="Perfil" />
+            )}
+            <div className="text-left leading-tight">
+              <p className="text-[10px]">&lt;</p>
+              <p className="font-semibold text-sm">
+                Olá,{' '}
+                {capitalize(user?.nome_completo?.split(' ')[0] || 'visitante')}
               </p>
             </div>
           </button>
@@ -42,7 +54,7 @@ export default function Header() {
             width={84}
             height={34}
             alt="Logo Motivou Levou"
-            className={`transition-opacity duration-700 ease-in-out`}
+            className="transition-opacity duration-700 ease-in-out"
           />
         </div>
       </header>

@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 
-interface User {
+export interface User {
+  id: number;
   nome_completo: string;
   email: string;
+  tipo: 'ADMIN' | 'CLIENTE' | 'PROFISSIONAL';
 }
 
 export function useCurrentUser() {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/usuario/me/`, {
@@ -17,8 +20,9 @@ export function useCurrentUser() {
         return res.json();
       })
       .then(setUser)
-      .catch(() => setUser(null));
+      .catch(() => setUser(null))
+      .finally(() => setIsLoading(false));
   }, []);
 
-  return user;
+  return { user, isLoading };
 }
