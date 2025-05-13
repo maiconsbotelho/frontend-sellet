@@ -1,61 +1,55 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation'; // No longer needed
 import Image from 'next/image';
+import clsx from 'clsx';
+import SplashImage from '@/../public/splash.png';
 
-export default function Splash() {
-  const [visible, setVisible] = useState(true);
-  const router = useRouter();
+interface SplashProps {
+  onComplete: () => void;
+}
+
+// ...existing code...
+export default function Splash({ onComplete }: SplashProps) {
+  const [fadeOut, setFadeOut] = useState(false);
+  // const router = useRouter(); // No longer needed
+  // const [visible, setVisible] = useState(true); // No longer needed
 
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      setVisible(false);
-      router.push('/');
-    }, 2500);
+    const initialDelayTimer = setTimeout(() => {
+      setFadeOut(true); // Trigger fade-out animation
 
-    return () => clearTimeout(timeout);
-  }, [router]);
+      // Wait for the fade-out animation (2000ms) to complete
+      const animationCompleteTimer = setTimeout(() => {
+        onComplete();
+      }, 1000); // This duration should match your CSS transition duration (duration-2000)
 
-  if (!visible) return null;
+      return () => clearTimeout(animationCompleteTimer);
+    }, 2000); // Initial delay before fade-out starts
+
+    return () => {
+      clearTimeout(initialDelayTimer);
+    };
+  }, [onComplete]);
+
+  // if (!visible) return null; // No longer needed, parent will unmount
 
   return (
-    <div className="h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-pink-100 to-pink-200 text-center px-6">
-      {/* Logo Séllet */}
-      <h1 className="text-4xl font-bold tracking-wide text-pink-700 mb-2">
-        SÉLLET
-      </h1>
-      <p className="text-sm uppercase tracking-widest text-pink-500 mb-6">
-        Esmalteria
-      </p>
-
-      {/* Mão com unha - Ilustração/ícone */}
-      <div className="relative w-[220px] h-[220px] mb-6">
-        <Image
-          src="/img/unhas-splash.png" // substitua pela imagem recortada da mão
-          alt="Unhas decoradas"
-          fill
-          className="object-contain"
-        />
-      </div>
-
-      {/* Texto principal */}
-      <h2 className="text-xl font-semibold text-pink-900 mb-2">
-        Book Your Next Manicure Online
-      </h2>
-      <p className="text-sm text-pink-700 mb-6">
-        Discover beauty and elegance at our premium nail studio.
-      </p>
-
-      {/* Botões */}
-      <div className="flex gap-4">
-        <button className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full text-sm font-medium shadow">
-          Book Now
-        </button>
-        <button className="border border-pink-500 text-pink-600 px-6 py-2 rounded-full text-sm font-medium shadow">
-          Log In
-        </button>
-      </div>
+    <div
+      className={clsx(
+        'h-screen w-full flex flex-col items-center justify-center bg-gradient-to-b from-pink-100 to-pink-200 text-center px-6 transition-opacity duration-1000 ease-in-out',
+        fadeOut ? 'opacity-0' : 'opacity-100'
+      )}
+    >
+      {/* ...existing code... */}
+      <Image
+        src={SplashImage}
+        alt="Esmalteria"
+        fill
+        className="object-cover animate-fade-in"
+        priority
+      />
     </div>
   );
 }

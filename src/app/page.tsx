@@ -5,21 +5,35 @@ import Home2 from '@/components/home/home';
 import Splash from '@/components/home/splash';
 
 export default function Home() {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplashComponent, setShowSplashComponent] = useState(true);
+  const [showHomeComponent, setShowHomeComponent] = useState(false);
 
   useEffect(() => {
     const alreadyShown = sessionStorage.getItem('splashShown');
 
     if (alreadyShown) {
-      setShowSplash(false);
+      setShowSplashComponent(false);
+      setShowHomeComponent(true); // Show home immediately if splash was already shown
     } else {
       sessionStorage.setItem('splashShown', 'true');
-      const timer = setTimeout(() => setShowSplash(false), 5000);
-      return () => clearTimeout(timer);
     }
   }, []);
 
-  if (showSplash) return <Splash />;
+  const handleSplashComplete = () => {
+    setShowSplashComponent(false);
+    setShowHomeComponent(true); // Trigger home component to show (and fade in)
+  };
 
-  return <Home2 />;
+  return (
+    <>
+      {showSplashComponent && <Splash onComplete={handleSplashComplete} />}
+      {showHomeComponent && (
+        <div className="animate-fade-in-slow">
+          {' '}
+          {/* Add your fade-in animation class here */}
+          <Home2 />
+        </div>
+      )}
+    </>
+  );
 }
