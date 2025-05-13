@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState, useMemo } from 'react'; // Added useMemo
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
+import ModalAgenda from '@/components/admin/agenda/modalAgenda';
 
 // --- Type Definitions ---
 type Profissional = {
-  id: string;
+  id: number;
   nome: string;
 };
 
@@ -117,7 +118,7 @@ const Agenda = () => {
 
         // Tipando diretamente como Profissional[]
         const profissionaisFormatados: Profissional[] = data.map((p: any) => ({
-          id: String(p.id),
+          id: p.id,
           nome: p.nome_completo,
         }));
 
@@ -131,7 +132,7 @@ const Agenda = () => {
 
         // Only set default if profissionalSelecionado is currently null
         if (profissionalSelecionado === null && fernanda) {
-          setProfissionalSelecionado(fernanda.id);
+          setProfissionalSelecionado(fernanda.id.toString());
         }
       } catch (error) {
         console.error('Erro ao buscar profissionais:', error);
@@ -698,217 +699,21 @@ const Agenda = () => {
       )}
 
       {/* --- Modal para Adicionar/Editar Agendamento --- */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
-          {' '}
-          {/* Added overflow-y-auto */}
-          <form
-            onSubmit={handleFormSubmit}
-            className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black relative my-8" /* Added margin */
-          >
-            <button
-              type="button"
-              onClick={closeModal}
-              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-2xl"
-              aria-label="Fechar modal"
-            >
-              &times;
-            </button>
-            <h2 className="text-xl font-semibold mb-4">
-              {modalMode === 'add' ? 'Novo Agendamento' : 'Editar Agendamento'}
-            </h2>
 
-            {modalError && (
-              <div
-                className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3"
-                role="alert"
-              >
-                <span className="block sm:inline">{modalError}</span>
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              {/* Cliente */}
-              <div>
-                <label
-                  htmlFor="cliente"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Cliente
-                </label>
-                <select
-                  id="cliente"
-                  name="cliente"
-                  value={modalFormData.cliente}
-                  onChange={handleModalChange}
-                  required
-                  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="" disabled>
-                    -- Selecione --
-                  </option>
-                  {clientes.map((c) => (
-                    <option key={c.id} value={String(c.id)}>
-                      {c.nome_completo}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Serviço */}
-              <div>
-                <label
-                  htmlFor="servico"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Serviço
-                </label>
-                <select
-                  id="servico"
-                  name="servico"
-                  value={modalFormData.servico}
-                  onChange={handleModalChange}
-                  required
-                  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  disabled={
-                    !profissionalSelecionado ||
-                    getAvailableServices.length === 0
-                  } // Disable if no services
-                >
-                  <option value="" disabled>
-                    {profissionalSelecionado
-                      ? '-- Selecione --'
-                      : '-- Selecione Profissional --'}
-                  </option>
-                  {getAvailableServices.map(
-                    (
-                      s // Use memoized list
-                    ) => (
-                      <option key={s.id} value={String(s.id)}>
-                        {s.nome}
-                      </option>
-                    )
-                  )}
-                </select>
-                {profissionalSelecionado &&
-                  getAvailableServices.length === 0 && (
-                    <p className="text-xs text-red-500 mt-1">
-                      Nenhum serviço disponível para este profissional.
-                    </p>
-                  )}
-              </div>
-
-              {/* Data */}
-              <div>
-                <label
-                  htmlFor="data"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Data
-                </label>
-                <input
-                  id="data"
-                  name="data"
-                  type="date"
-                  value={modalFormData.data}
-                  onChange={handleModalChange}
-                  required
-                  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  // Allow changing date/time when editing if needed, remove readOnly
-                  // readOnly={modalMode === 'edit'}
-                />
-              </div>
-
-              {/* Hora */}
-              <div>
-                <label
-                  htmlFor="hora"
-                  className="block text-sm font-medium text-gray-700 mb-1"
-                >
-                  Hora
-                </label>
-                <input
-                  id="hora"
-                  name="hora"
-                  type="time" // Use time input
-                  value={modalFormData.hora}
-                  onChange={handleModalChange}
-                  required
-                  className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  // Allow changing date/time when editing if needed, remove readOnly
-                  // readOnly={modalMode === 'edit'}
-                  step="1800" // Optional: Set step for time picker (e.g., 30 minutes)
-                />
-              </div>
-
-              {/* Profissional (Readonly display) */}
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Profissional
-                </label>
-                <input
-                  type="text"
-                  value={
-                    profissionais.find(
-                      (p) => p.id === modalFormData.profissional
-                    )?.nome || 'N/A'
-                  }
-                  readOnly
-                  className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600"
-                />
-                {/* Hidden input to ensure profissional ID is submitted */}
-                <input
-                  type="hidden"
-                  name="profissional"
-                  value={modalFormData.profissional}
-                />
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex justify-between items-center mt-6">
-              <div>
-                {modalMode === 'edit' && (
-                  <button
-                    type="button"
-                    onClick={handleDeleteAgendamento}
-                    disabled={loadingModal}
-                    className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700 disabled:opacity-50"
-                  >
-                    <FaTrash className="mr-2" />{' '}
-                    {loadingModal ? 'Excluindo...' : 'Excluir'}
-                  </button>
-                )}
-              </div>
-              <div className="space-x-2">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  disabled={loadingModal}
-                  className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={loadingModal}
-                  className={`px-4 py-2 rounded text-white ${
-                    modalMode === 'add'
-                      ? 'bg-blue-600 hover:bg-blue-700'
-                      : 'bg-green-600 hover:bg-green-700'
-                  } disabled:opacity-50`}
-                >
-                  {loadingModal
-                    ? 'Salvando...'
-                    : modalMode === 'add'
-                    ? 'Agendar'
-                    : 'Salvar Alterações'}
-                </button>
-              </div>
-            </div>
-          </form>
-        </div>
-      )}
+      <ModalAgenda
+        isOpen={isModalOpen}
+        mode={modalMode}
+        formData={modalFormData}
+        clientes={clientes}
+        profissionais={profissionais}
+        servicosDisponiveis={getAvailableServices}
+        error={modalError}
+        loading={loadingModal}
+        onClose={closeModal}
+        onChange={handleModalChange}
+        onSubmit={handleFormSubmit}
+        onDelete={handleDeleteAgendamento}
+      />
     </div>
   );
 };

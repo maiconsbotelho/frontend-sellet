@@ -57,7 +57,7 @@ export default function Header() {
               />
             )}
 
-            <div className="text-left leading-tight">
+            <div className="text-left leading-tight text-white">
               <p className="text-[10px]">&lt;</p>
               <p className="font-semibold text-sm">
                 Olá,{' '}

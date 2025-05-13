@@ -32,7 +32,7 @@ export default function HeaderPaginas({ title, voltarFunc = null }: Props) {
             onClick={() => router.back()}
           />
         )}
-        <p className="text-lg text-[var(--accent)] font-semibold tracking-tighter">
+        <p className="text-lg text-white font-semibold tracking-tighter">
           {title}
         </p>
       </div>
