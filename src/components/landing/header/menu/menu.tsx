@@ -33,7 +33,7 @@ export default function Menu() {
 
   const handleAgendamentos = () => {
     setIsOpen(false);
-    router.push('/agendamentos');
+    router.push('/admin/agenda');
   };
 
   return (
