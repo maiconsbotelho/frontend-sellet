@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FaArrowLeft } from 'react-icons/fa';
 import Image from 'next/image';
-import LogoMotivouLevou from '@/../public/logo3.png';
+import LogoSellet from '@/../public/logo3.png';
+import Link from 'next/link';
 
 interface Props {
   title: string;
@@ -36,12 +37,14 @@ export default function HeaderPaginas({ title, voltarFunc = null }: Props) {
           {title}
         </p>
       </div>
-      <Image
-        src={LogoMotivouLevou}
-        width={84}
-        height={34}
-        alt="Logo Motivou Levou"
-      />
+      <Link href={'/'}>
+        <Image
+          src={LogoSellet}
+          width={84}
+          height={34}
+          alt="Logo Motivou Levou"
+        />
+      </Link>
     </div>
   );
 }

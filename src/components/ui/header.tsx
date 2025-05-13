@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useModal } from '@/context/modalPerfilContext';
 import ModalPerfil from '@/components/ui/modalPerfil';
-import LogoMotivouLevou from '@/../public/logo3.png';
+import LogoSellet from '@/../public/logo3.png';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
 export default function Header() {
@@ -69,7 +69,7 @@ export default function Header() {
           <ModalPerfil />
 
           <Image
-            src={LogoMotivouLevou}
+            src={LogoSellet}
             width={84}
             height={34}
             alt="Logo Motivou Levou"
