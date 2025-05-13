@@ -3,7 +3,7 @@ import TituloSecao from '@/components/ui/TituloSecao';
 export default function SecaoSobre() {
   return (
     <>
-      <div className="container flex flex-col pt-7 mb-20 gap-y-16">
+      <div className="container flex flex-col text-[var(--text)] bg-white pt-7 mb-20 gap-y-16">
         <TituloSecao
           tag="Quem Somos"
           principal="Como Tudo Começou"
@@ -11,7 +11,7 @@ export default function SecaoSobre() {
         />
       </div>
 
-      <div className="container text-white">
+      <div className="container text-[var(--text)] bg-white">
         <p className="mb-3 text-lg text-justify">
           A Séllet nasceu em 2021, período pandêmico onde não se podia
           trabalhar. Era somente o essencial!! Nesse momento a Séllet precisou

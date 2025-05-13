@@ -3,8 +3,10 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FaUser, FaSignOutAlt, FaCalendarAlt } from 'react-icons/fa';
-import { useCurrentUser } from '@/hooks/useCurrentUser'; // ajuste o path conforme necessário
-import { logout } from '@/services/authService'; // seu serviço real de logout
+import { FiLogIn } from 'react-icons/fi';
+import { useCurrentUser } from '@/hooks/useCurrentUser';
+import Image from 'next/image';
+import Avatar from '@/../public/avatar.png';
 
 export default function Menu() {
   const router = useRouter();
@@ -16,7 +18,6 @@ export default function Menu() {
   const toggleDropdown = () => setIsOpen((prev) => !prev);
 
   const handleLogout = async () => {
-    console.log('logout clicado');
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_API_BASE_URL}/usuario/logout/`,
       {
@@ -24,7 +25,10 @@ export default function Menu() {
         credentials: 'include',
       }
     );
-    console.log('resposta logout', res.status);
+    if (res.ok) {
+      await refetch?.();
+      router.push('/login');
+    }
   };
 
   const handleAgendamentos = () => {
@@ -38,14 +42,14 @@ export default function Menu() {
         <>
           <button
             onClick={toggleDropdown}
-            className="text-[var(--secondary)] text-xl"
+            className="w-8 h-8  overflow-hidden "
             aria-label="Abrir menu do usuário"
           >
-            <FaUser />
+            <Image src={Avatar} alt="Avatar" fill className="object-cover" />
           </button>
 
           {isOpen && (
-            <div className="absolute right-0 mt-2 w-44 bg-pink-700 border rounded shadow-lg z-50">
+            <div className="absolute right-0 mt-2 w-44 bg-white border rounded shadow-lg z-50">
               <button
                 onClick={handleAgendamentos}
                 className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 flex items-center gap-2"
@@ -67,7 +71,7 @@ export default function Menu() {
           className="text-[var(--secondary)] text-xl"
           aria-label="Ir para login"
         >
-          <FaUser />
+          <FiLogIn />
         </button>
       )}
     </div>
