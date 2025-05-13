@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaClock, FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
+import { FaClock, FaEdit, FaPlus, FaTrash, FaSave } from 'react-icons/fa';
 
 // --- Definições de Tipos ---
 type Profissional = {
@@ -570,10 +570,10 @@ export default function ExpedientePage() {
             onSubmit={handleModalSubmit}
             className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black my-auto" // Adjusted modal container
           >
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl text-[var(--accent)] font-semibold mb-4">
               {' '}
               {/* Adjusted title style */}
-              {modalMode === 'add' ? 'Adicionar Novo' : 'Editar'} Horário de
+              {modalMode === 'add' ? 'Adicionar ' : 'Editar '}
               Expediente
             </h2>
 
@@ -713,19 +713,23 @@ export default function ExpedientePage() {
               </button>
               <button
                 type="submit"
-                className={`px-4 py-2 rounded text-white disabled:opacity-50 disabled:cursor-wait transition-colors ${
+                className={`px-4 py-2 rounded text-white disabled:opacity-50 disabled:cursor-wait transition-colors flex items-center ${
+                  // Adicionado flex items-center
                   // Use accent for add, green for edit
                   modalMode === 'add'
                     ? 'bg-[var(--accent)] hover:bg-pink-700'
-                    : 'bg-green-600 hover:bg-green-700'
+                    : 'bg-[var(--accent)] hover:bg-green-700' // Pode manter a mesma cor ou diferenciar se preferir
                 }`}
                 disabled={isSubmitting} // Desabilita salvar se enviando
               >
-                {isSubmitting
-                  ? 'Salvando...'
-                  : modalMode === 'add'
-                  ? 'Adicionar'
-                  : 'Salvar Alterações'}
+                {isSubmitting ? (
+                  'Salvando...'
+                ) : (
+                  <>
+                    <FaSave className="mr-2" />
+                    {modalMode === 'add' ? 'Salvar' : 'Salvar'}
+                  </>
+                )}
               </button>
             </div>
           </form>

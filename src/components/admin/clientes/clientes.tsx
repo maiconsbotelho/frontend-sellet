@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { FaEdit, FaTrash } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import useApi from '@/hooks/useApi';
 import AddButton from '@/components/shared/addButton';
 import CrudModal from '@/components/shared/crudModal/crudModal';
@@ -23,6 +23,19 @@ export type Client = {
   tipo?: string;
 };
 
+const initialFormState: Partial<Client> = {
+  email: '',
+  nome_completo: '',
+  password: '',
+  telefone: '',
+  cpf: '',
+  cep: '',
+  rua: '',
+  numero_casa: '',
+  cidade: '',
+  uf: '',
+};
+
 export default function ClientesPage() {
   const {
     data: clients,
@@ -40,7 +53,7 @@ export default function ClientesPage() {
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [current, setCurrent] = useState<Client | null>(null);
-  const [form, setForm] = useState<Record<string, any>>({});
+  const [form, setForm] = useState<Record<string, any>>(initialFormState);
 
   const fetchClients = useCallback(async () => {
     await fetchClientsApi({ tipo: 'CLIENTE' });
@@ -59,18 +72,7 @@ export default function ClientesPage() {
   }, [search, clients]);
 
   const openAdd = () => {
-    setForm({
-      email: '',
-      nome_completo: '',
-      password: '',
-      telefone: '',
-      cpf: '',
-      cep: '',
-      rua: '',
-      numero_casa: '',
-      cidade: '',
-      uf: '',
-    });
+    setForm(initialFormState);
     setApiError(null);
     setIsAddOpen(true);
   };
@@ -80,7 +82,7 @@ export default function ClientesPage() {
     setForm({
       email: c.email,
       nome_completo: c.nome_completo,
-      password: '',
+      password: '', // Password is not pre-filled for editing
       telefone: c.telefone || '',
       cpf: c.cpf || '',
       cep: c.cep || '',
@@ -100,8 +102,11 @@ export default function ClientesPage() {
     setApiError(null);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (apiError) setApiError(null); // Clear error on change
   };
 
   const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -120,7 +125,12 @@ export default function ClientesPage() {
       uf: form.uf || null,
     };
 
-    if (!form.password) delete postData.password;
+    if (!form.password) {
+      delete postData.password;
+    } else if (form.password.length < 6) {
+      setApiError('A senha deve ter pelo menos 6 caracteres.');
+      return;
+    }
 
     const newClient = await addClientApi(postData);
     if (newClient) {
@@ -134,10 +144,10 @@ export default function ClientesPage() {
     if (!current) return;
     setApiError(null);
 
-    const putData = {
+    const putData: Partial<Client> = {
       email: form.email,
       nome_completo: form.nome_completo,
-      tipo: 'CLIENTE',
+      tipo: 'CLIENTE', // Ensure type is always set
       telefone: form.telefone || null,
       cpf: form.cpf || null,
       cep: form.cep || null,
@@ -146,6 +156,15 @@ export default function ClientesPage() {
       cidade: form.cidade || null,
       uf: form.uf || null,
     };
+
+    // Only include password if it's provided and meets criteria
+    if (form.password && form.password.length > 0) {
+      if (form.password.length < 6) {
+        setApiError('A nova senha deve ter pelo menos 6 caracteres.');
+        return;
+      }
+      putData.password = form.password;
+    }
 
     const updated = await updateClientApi(current.id, putData);
     if (updated) {
@@ -178,15 +197,70 @@ export default function ClientesPage() {
       required: true,
     },
     { name: 'email', label: 'E-mail', type: 'email', required: true },
-    { name: 'password', label: 'Senha', type: 'password' },
+    {
+      name: 'password',
+      label: 'Senha (mín. 6 caracteres)',
+      type: 'password',
+      // Senha não é obrigatória na edição, apenas se for alterada
+    },
     { name: 'telefone', label: 'Telefone', type: 'text' },
     { name: 'cpf', label: 'CPF', type: 'text', maxLength: 11 },
-    { name: 'cep', label: 'CEP', type: 'text', maxLength: 8 },
-    { name: 'rua', label: 'Rua', type: 'text' },
-    { name: 'numero_casa', label: 'Número', type: 'text' },
-    { name: 'cidade', label: 'Cidade', type: 'text' },
-    { name: 'uf', label: 'UF', type: 'text', maxLength: 2 },
+    {
+      name: 'addressToggle',
+      label: 'Endereço (Opcional)',
+      type: 'collapsible-toggle',
+      initiallyOpen: false,
+    },
+    {
+      name: 'cep',
+      label: 'CEP',
+      type: 'text',
+      maxLength: 8,
+      collapsibleSectionId: 'addressToggle',
+    },
+    {
+      name: 'rua',
+      label: 'Rua',
+      type: 'text',
+      collapsibleSectionId: 'addressToggle',
+    },
+    {
+      name: 'numero_casa',
+      label: 'Número',
+      type: 'text',
+      collapsibleSectionId: 'addressToggle',
+    },
+    {
+      name: 'cidade',
+      label: 'Cidade',
+      type: 'text',
+      collapsibleSectionId: 'addressToggle',
+    },
+    {
+      name: 'uf',
+      label: 'UF',
+      type: 'text',
+      maxLength: 2,
+      collapsibleSectionId: 'addressToggle',
+    },
   ];
+
+  // Fields for the "Add New Client" modal
+  const addFormFields = formFields.map((field) => {
+    if (field.name === 'password') {
+      return { ...field, required: true }; // Password required for new client
+    }
+    return field;
+  });
+
+  // Fields for the "Edit Client" modal (password not required, only if changing)
+  const editFormFields = formFields
+    .filter((f) => f.name !== 'password')
+    .concat({
+      name: 'password',
+      label: 'Nova Senha (deixe em branco para não alterar)',
+      type: 'password',
+    });
 
   return (
     <div className="p-6 pb-44 w-screen h-screen overscroll-none flex flex-col">
@@ -208,37 +282,41 @@ export default function ClientesPage() {
       )}
 
       <ul className="flex-1 overflow-y-auto min-h-0 space-y-2 pb-44">
-        {filtered.length > 0 ? (
-          filtered.map((c) => (
-            <li
-              key={c.id}
-              className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
-            >
-              <div>
-                <span className="font-medium">{c.nome_completo}</span>
-                <span className="text-sm text-gray-500 block">{c.email}</span>
-              </div>
-              <button
-                onClick={() => openEdit(c)}
-                className="text-[var(--accent)] p-1"
-                aria-label={`Editar ${c.nome_completo}`}
-              >
-                <FaEdit />
-              </button>
-            </li>
-          ))
-        ) : (
+        {isLoading && filtered.length === 0 && (
+          <li className="text-center text-gray-500 py-4">
+            Carregando clientes...
+          </li>
+        )}
+        {!isLoading && filtered.length === 0 && (
           <li className="text-center text-gray-500 py-4">
             Nenhum cliente encontrado.
           </li>
         )}
+        {filtered.map((c) => (
+          <li
+            key={c.id}
+            className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
+          >
+            <div>
+              <span className="font-medium">{c.nome_completo}</span>
+              <span className="text-sm text-gray-500 block">{c.email}</span>
+            </div>
+            <button
+              onClick={() => openEdit(c)}
+              className="text-[var(--accent)] p-1"
+              aria-label={`Editar ${c.nome_completo}`}
+            >
+              <FaEdit />
+            </button>
+          </li>
+        ))}
       </ul>
 
       <CrudModal
         title="Novo Cliente"
         isOpen={isAddOpen}
         formData={form}
-        formFields={formFields}
+        formFields={addFormFields}
         onChange={handleChange}
         onClose={closeModals}
         onSubmit={handleAdd}
@@ -250,7 +328,7 @@ export default function ClientesPage() {
         title="Editar Cliente"
         isOpen={isEditOpen}
         formData={form}
-        formFields={formFields.filter((f) => f.name !== 'password')}
+        formFields={editFormFields}
         onChange={handleChange}
         onClose={closeModals}
         onSubmit={handleEdit}

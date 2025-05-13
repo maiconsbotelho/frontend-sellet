@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { FaTrash } from 'react-icons/fa';
+import { FaTrash, FaSave } from 'react-icons/fa';
 
 // Define or import the AgendamentoFormData type
 
@@ -72,7 +72,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
         className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black" // Removed relative my-8
       >
         {/* Removed the explicit 'X' close button to match crudModal behavior */}
-        <h2 className="text-xl font-semibold mb-4">
+        <h2 className="text-xl font-semibold mb-4 text-[var(--accent)]">
           {mode === 'add' ? 'Novo Agendamento' : 'Editar Agendamento'}
         </h2>
 
@@ -204,8 +204,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
           </div>
         </div>
 
-        <div className="flex justify-between items-center">
-          {' '}
+        <div className="flex justify-between py-12 items-center">
           {/* Removed mt-6 */}
           {mode === 'edit' &&
             onDelete && ( // Added check for onDelete prop
@@ -219,8 +218,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
                 {loading ? 'Excluindo...' : 'Excluir'}
               </button>
             )}
-          <div className="space-x-2 ml-auto pb-16 pt-4">
-            {' '}
+          <div className="flex gap-2">
             {/* Added pb-16 pt-4 */}
             <button
               type="button"
@@ -233,13 +231,16 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700 disabled:opacity-50" // Standardized submit button style
+              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700 disabled:opacity-50 flex items-center" // Adicionado flex items-center
             >
-              {loading
-                ? 'Salvando...'
-                : mode === 'add'
-                ? 'Agendar'
-                : 'Salvar Alterações'}
+              {loading ? (
+                'Salvando...'
+              ) : (
+                <>
+                  <FaSave className="mr-2" />
+                  {mode === 'add' ? 'Agendar' : 'Salvar'}
+                </>
+              )}
             </button>
           </div>
         </div>
