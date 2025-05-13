@@ -563,7 +563,7 @@ export default function ExpedientePage() {
       <div className="space-y-2">{renderExpedientes()}</div>
       {/* MODAL ADICIONAR/EDITAR */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto p-4">
+        <div className="absolute top-[80px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
           {' '}
           {/* Adjusted overlay */}
           <form
