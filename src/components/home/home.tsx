@@ -7,6 +7,7 @@ import Menu from '../landing/header/menu/menu';
 import SecaoSobre from '../landing/sessoes/SecaoSobre';
 import Link from 'next/link';
 import BotaoAgendar from './botaoAgendar';
+import Rodape from '../landing/sessoes/Rodape';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -117,7 +118,7 @@ export default function Home() {
             essencial para a mente e corpo das mulheres. Auto estima tem
             prioridade aqui.
           </p>
-          <p className="mb-3 text-lg text-justify">
+          {/* <p className="mb-3 text-lg text-justify">
             A Séllet tem como prevalência o bem estar e aconchego do cliente.
             Ser um lugar para você ter um colo e também a auto estima elevada e
             devolvida. Risos e beleza andam juntos. Conversa e mate, se isso não
@@ -132,7 +133,7 @@ export default function Home() {
             Vem conhecer. É um prazer mostrar nossa casa e te fazer parte dessa
             selléta carta de clientes que são sempre essenciais e prioridade
             para nossa casa!!
-          </p>
+          </p> */}
         </div>
       </section>
 
@@ -151,8 +152,8 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-pink-100 text-center py-6 text-sm text-pink-800">
-        © {new Date().getFullYear()} Séllet Esmalteria. Todos os direitos
+      <footer className="bg-[var(--vinho)] text-center py-6 text-sm text-pink-100">
+        © {new Date().getFullYear()} 💖Séllet Esmalteria. Todos os direitos
         reservados.
       </footer>
     </main>

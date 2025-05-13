@@ -64,7 +64,7 @@ export default function LoginForm() {
       <div className="relative z-20 w-full max-w-md bg-white rounded-3xl shadow-xl p-8 md:p-10 border border-rose-100">
         <div className="flex justify-center mb-6">
           <Image
-            src="/avatar.png"
+            src="/avatar-nanda.jpg"
             alt="Logo Sellet"
             width={90}
             height={90}
