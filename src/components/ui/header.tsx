@@ -31,13 +31,32 @@ export default function Header() {
             onClick={openModal}
             className="flex items-center gap-3 cursor-pointer"
           >
-            {user ? (
+            {/* {user ? (
               <div className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center text-sm font-bold border border-gray-300">
                 {user.nome_completo?.[0]?.toUpperCase() ?? 'U'}
               </div>
             ) : (
               <Image src="/ui/perfil.svg" width={40} height={40} alt="Perfil" />
+            )} */}
+
+            {user ? (
+              <Image
+                src="/avatar-nanda.jpg"
+                alt="Avatar do usuário"
+                width={40}
+                height={40}
+                className="rounded-full border-2 border-rose-300 shadow-sm object-cover"
+              />
+            ) : (
+              <Image
+                src="/ui/perfil.svg"
+                width={40}
+                height={40}
+                alt="Perfil padrão"
+                className="rounded-full"
+              />
             )}
+
             <div className="text-left leading-tight">
               <p className="text-[10px]">&lt;</p>
               <p className="font-semibold text-sm">
