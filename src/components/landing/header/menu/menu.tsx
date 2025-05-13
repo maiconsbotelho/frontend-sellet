@@ -42,16 +42,16 @@ export default function Menu() {
         <>
           <button
             onClick={toggleDropdown}
-            className="w-8 h-8  overflow-hidden "
+            className="w-10 h-10 overflow-hidden "
             aria-label="Abrir menu do usuário"
           >
             {/* <Image src={Avatar} alt="Avatar" fill className="object-cover" /> */}
-            <div className="flex justify-center mb-6">
+            <div className="flex justify-center">
               <Image
                 src="/avatar-nanda.jpg"
                 alt="Logo Sellet"
-                width={90}
-                height={90}
+                width={200}
+                height={200}
                 className="rounded-full shadow-lg border-2 border-rose-300"
               />
             </div>
