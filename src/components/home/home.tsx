@@ -5,6 +5,8 @@ import Logo from '../ui/Logo';
 import { Playfair_Display } from 'next/font/google';
 import Menu from '../landing/header/menu/menu';
 import SecaoSobre from '../landing/sessoes/SecaoSobre';
+import Link from 'next/link';
+import BotaoAgendar from './botaoAgendar';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
@@ -44,9 +46,10 @@ export default function Home() {
           <p className="mt-4 text-xl md:text-xl drop-shadow">
             Agende online, sem complicações.
           </p>
-          <button className="mt-12 bg-pink-500 hover:bg-pink-600 text-white font-semibold text-lg px-8 py-3 rounded-full shadow-lg transition-all">
-            Agendar Agora
-          </button>
+          <BotaoAgendar />
+          {/* <button className="mt-12 bg-pink-500 hover:bg-pink-600 text-white font-semibold text-lg px-8 py-3 rounded-full shadow-lg transition-all">
+            <Link href={'/login'}>Agendar Agora</Link>
+          </button> */}
         </div>
       </section>
 
