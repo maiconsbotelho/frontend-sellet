@@ -219,7 +219,9 @@ export default function ServicosPage() {
               className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
             >
               <div>
-                <span className="font-medium">{s.nome}</span>
+                <span className="font-medium text-[var(--accent)]">
+                  {s.nome}
+                </span>
                 <span className="text-sm text-gray-500 block">
                   Preço: {formatCurrency(s.preco)}
                 </span>

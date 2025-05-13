@@ -186,7 +186,9 @@ export default function ProfissionaisPage() {
               className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
             >
               <div>
-                <span className="font-medium">{p.nome_completo}</span>
+                <span className="font-medium text-[var(--accent)]">
+                  {p.nome_completo}
+                </span>
                 <span className="text-sm text-gray-500 block">{p.email}</span>
               </div>
               <button

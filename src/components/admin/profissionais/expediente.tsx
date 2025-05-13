@@ -425,7 +425,7 @@ export default function ExpedientePage() {
           }
           aria-disabled={isSubmitting} // Indica estado desabilitado durante o envio
         >
-          <h3 className="text-lg font-semibold mb-2 text-gray-800">
+          <h3 className="text-lg font-semibold mb-2 text-[var(--accent)]">
             {' '}
             {/* Adjusted text color */}
             {diaNome}
@@ -437,12 +437,12 @@ export default function ExpedientePage() {
               {groupedExpedientes[index].map((exp) => (
                 <li
                   key={exp.id}
-                  className="flex justify-between items-center py-1" // Adjusted padding
+                  className="flex justify-between items-center py-1 " // Adjusted padding
                 >
                   <span className="text-gray-700">
                     {' '}
                     {/* Adjusted text color */}
-                    <FaClock className="inline mr-2 text-[var(--accent)]" />{' '}
+                    <FaClock className="inline mr-2 text-white" />{' '}
                     {/* Use accent color */}
                     {exp.inicio} - {exp.fim}
                   </span>

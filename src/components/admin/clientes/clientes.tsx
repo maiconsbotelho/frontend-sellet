@@ -298,7 +298,9 @@ export default function ClientesPage() {
             className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
           >
             <div>
-              <span className="font-medium">{c.nome_completo}</span>
+              <span className="font-medium text-[var(--accent)]">
+                {c.nome_completo}
+              </span>
               <span className="text-sm text-gray-500 block">{c.email}</span>
             </div>
             <button
