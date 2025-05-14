@@ -8,26 +8,7 @@ import {
   Cliente,
   Servico,
   AgendamentoFormData,
-} from '@/utils/types'; // Adjust the import path as necessary
-// Define or import the AgendamentoFormData type
-
-// Define the Servico type if not already defined elsewhere
-// interface Servico {
-//   id: number;
-//   nome: string;
-// }
-
-// Define the Profissional type if not already defined elsewhere
-// interface Profissional {
-//   id: number;
-//   nome: string;
-// }
-
-// // Define the Cliente type if not already defined elsewhere
-// interface Cliente {
-//   id: number;
-//   nome_completo: string;
-// }
+} from '@/utils/types';
 interface ModalAgendaProps {
   isOpen: boolean;
   mode: 'add' | 'edit';
