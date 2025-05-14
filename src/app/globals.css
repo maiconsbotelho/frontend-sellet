@@ -44,9 +44,9 @@ body {
 }
 
 .animate-fade-in {
-  animation: fadeIn 1s ease-in-out; /* You might already have this from splash.png */
+  animation: fadeIn 1s ease-in-out;
 }
 
 .animate-fade-in-slow {
-  animation: fadeIn 1.5s ease-in-out; /* Adjust duration as needed */
+  animation: fadeIn 1.5s ease-in-out;
 }

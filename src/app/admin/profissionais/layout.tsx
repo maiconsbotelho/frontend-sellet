@@ -1,6 +1,3 @@
-import React from 'react';
-
-//Components
 import HeaderPaginas from '@/components/shared/headers/headerPaginas/headerPaginas';
 
 export default function ProfissionaisLayout({
