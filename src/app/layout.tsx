@@ -11,6 +11,7 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Sellet Esmalteria',
   description: 'Onde sua beleza é nossa prioridade!',
+  themeColor: '#FFB6C1',
 };
 
 export default function RootLayout({
@@ -20,6 +21,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="pt-BR">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+      </head>
       <body className={montserrat.className}>
         <ContextProvider>{children}</ContextProvider>
       </body>
