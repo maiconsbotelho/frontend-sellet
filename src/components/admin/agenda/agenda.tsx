@@ -3,46 +3,14 @@
 import React, { useEffect, useState, useMemo } from 'react'; // Added useMemo
 import { FaPlus, FaEdit, FaTrash } from 'react-icons/fa';
 import ModalAgenda from '@/components/admin/agenda/modalAgenda';
-
-// --- Type Definitions ---
-type Profissional = {
-  id: number;
-  nome: string;
-};
-
-type Cliente = {
-  id: number;
-  nome_completo: string;
-};
-
-type Servico = {
-  id: number;
-  nome: string;
-  profissionais?: number[]; // Array of professional IDs
-};
-
-type AgendaSlot = {
-  ocupado: boolean | null; // true = occupied, false = available, null = outside expediente
-  nome_cliente?: string;
-  agendamento_id?: number;
-  cliente_id?: number;
-  servico_id?: number;
-  servico_nome?: string;
-};
-
-type AgendaLinha = {
-  horario: string;
-  [data: string]: AgendaSlot | string; // horario is string, others are AgendaSlot
-};
-
-type AgendamentoFormData = {
-  id?: number;
-  cliente: string; // Store ID as string for form compatibility
-  profissional: string; // Store ID as string
-  servico: string; // Store ID as string
-  data: string; // YYYY-MM-DD
-  hora: string; // HH:MM
-};
+import {
+  Profissional,
+  Cliente,
+  Servico,
+  AgendaSlot,
+  AgendaLinha,
+  AgendamentoFormData,
+} from '@/utils/types';
 
 // --- Initial State ---
 const initialFormState: AgendamentoFormData = {
@@ -119,7 +87,7 @@ const Agenda = () => {
         // Tipando diretamente como Profissional[]
         const profissionaisFormatados: Profissional[] = data.map((p: any) => ({
           id: p.id,
-          nome: p.nome_completo,
+          nome_completo: p.nome_completo,
         }));
 
         setProfissionais(profissionaisFormatados);
@@ -127,7 +95,7 @@ const Agenda = () => {
         // SETA FERNANDA TELLES como padrão se ainda não tiver um profissional selecionado
         const PROFISSIONAL_PADRAO = 'fernanda telles';
         const fernanda = profissionaisFormatados.find((p) =>
-          p.nome.toLowerCase().includes(PROFISSIONAL_PADRAO)
+          p.nome_completo.toLowerCase().includes(PROFISSIONAL_PADRAO)
         );
 
         // Only set default if profissionalSelecionado is currently null
@@ -518,7 +486,7 @@ const Agenda = () => {
             </option>
             {profissionais.map((p) => (
               <option key={p.id} value={p.id}>
-                {p.nome}
+                {p.nome_completo}
               </option>
             ))}
           </select>

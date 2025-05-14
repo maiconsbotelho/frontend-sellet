@@ -3,34 +3,31 @@
 
 import React from 'react';
 import { FaTrash, FaSave } from 'react-icons/fa';
-
+import {
+  Profissional,
+  Cliente,
+  Servico,
+  AgendamentoFormData,
+} from '@/utils/types'; // Adjust the import path as necessary
 // Define or import the AgendamentoFormData type
 
 // Define the Servico type if not already defined elsewhere
-interface Servico {
-  id: number;
-  nome: string;
-}
+// interface Servico {
+//   id: number;
+//   nome: string;
+// }
 
 // Define the Profissional type if not already defined elsewhere
-interface Profissional {
-  id: number;
-  nome: string;
-}
+// interface Profissional {
+//   id: number;
+//   nome: string;
+// }
 
-// Define the Cliente type if not already defined elsewhere
-interface Cliente {
-  id: number;
-  nome_completo: string;
-}
-interface AgendamentoFormData {
-  cliente: string;
-  servico: string;
-  data: string;
-  hora: string;
-  profissional: string;
-}
-
+// // Define the Cliente type if not already defined elsewhere
+// interface Cliente {
+//   id: number;
+//   nome_completo: string;
+// }
 interface ModalAgendaProps {
   isOpen: boolean;
   mode: 'add' | 'edit';
@@ -191,7 +188,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               value={
                 profissionais.find(
                   (p) => p.id === Number(formData.profissional)
-                )?.nome || 'N/A'
+                )?.nome_completo || 'N/A'
               }
               readOnly
               className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600" // Kept bg-gray-100 for readonly distinct look
