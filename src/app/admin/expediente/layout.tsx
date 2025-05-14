@@ -1,6 +1,3 @@
-import React from 'react';
-
-//Components
 import HeaderPaginas from '@/components/ui/headerPaginas/headerPaginas';
 
 export default function ExpedienteLayout({

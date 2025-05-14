@@ -1,35 +1,13 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { FaClock, FaEdit, FaPlus, FaTrash, FaSave } from 'react-icons/fa';
-
-// --- Definições de Tipos ---
-type Profissional = {
-  id: number;
-  nome_completo: string;
-};
-
-type Horario = {
-  id: number;
-  horario: string; // Formato HH:MM:SS do backend, exibir como HH:MM
-};
-
-type HorarioExpediente = {
-  id: number;
-  profissional: number; // ID
-  dia_semana: number; // 0-6
-  horarios: Horario[];
-  // Adicionados para conveniência de exibição após buscar/processar
-  inicio?: string; // HH:MM
-  fim?: string; // HH:MM
-};
-
-type ExpedienteFormData = {
-  profissional: string; // ID como string para o formulário
-  dia_semana: string; // 0-6 como string para o formulário
-  inicio: string; // HH:MM
-  fim: string; // HH:MM
-};
+import {
+  Profissional,
+  Horario,
+  HorarioExpediente,
+  ExpedienteFormData,
+} from '@/utils/types';
 
 const DIAS_DA_SEMANA = [
   'Segunda',
@@ -49,8 +27,8 @@ export default function ExpedientePage() {
     string | null
   >(null);
   const [expedientes, setExpedientes] = useState<HorarioExpediente[]>([]);
-  const [isLoading, setIsLoading] = useState(false); // Representa o estado de carregamento geral da página/dados
-  const [isSubmitting, setIsSubmitting] = useState(false); // Representa o estado de envio do modal
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
@@ -64,46 +42,52 @@ export default function ExpedientePage() {
   });
   const [modalError, setModalError] = useState<string | null>(null);
 
-  // --- Busca de Dados ---
-
+  // Função para buscar profissionais e definir o profissional selecionado
   const fetchProfissionais = useCallback(async () => {
     setIsLoading(true);
     setError(null);
+
     try {
       const res = await fetch(`${API_BASE_URL}/usuario/?tipo=PROFISSIONAL`);
       if (!res.ok) throw new Error(`Erro ${res.status}`);
+
+      // Verifica se a resposta é um JSON válido
       const data: Profissional[] = await res.json();
       setProfissionais(data);
+
       // Seleciona o primeiro profissional por padrão se a lista não estiver vazia e nenhum estiver selecionado
       if (data.length > 0 && !selectedProfissionalId) {
         setSelectedProfissionalId(String(data[0].id));
-        // Não para o loading aqui, deixa fetchExpedientes cuidar disso
+        setIsLoading(false);
       } else if (data.length === 0) {
-        setIsLoading(false); // Para o loading se nenhum profissional for encontrado
+        setIsLoading(false);
       }
     } catch (err: any) {
       console.error('Falha ao buscar profissionais:', err);
       setError(
         `Falha ao buscar profissionais: ${err.message || 'Erro desconhecido'}`
       );
-      setIsLoading(false); // Para o loading em caso de erro
+      setIsLoading(false);
     }
-    // Bloco finally removido que definia isLoading como false prematuramente
-  }, [selectedProfissionalId]); // Depende apenas de selectedProfissionalId
+  }, [selectedProfissionalId]);
 
+  // Função para buscar expedientes do profissional selecionado
   const fetchExpedientes = useCallback(async () => {
     if (!selectedProfissionalId) {
       setExpedientes([]);
-      setIsLoading(false); // Para o loading se nenhum profissional estiver selecionado
+      setIsLoading(false);
       return;
     }
+
     // Garante que o loading esteja true ao buscar expedientes
     setIsLoading(true);
     setError(null); // Limpa erros anteriores específicos da busca de expediente
+
     try {
       const res = await fetch(
         `${API_BASE_URL}/agenda/expediente/por_profissional/?profissional=${selectedProfissionalId}`
       );
+
       if (!res.ok) throw new Error(`Erro ${res.status}`);
       let data: HorarioExpediente[] = await res.json();
 
@@ -114,14 +98,17 @@ export default function ExpedientePage() {
           const sortedHorarios = [...exp.horarios].sort((a, b) =>
             a.horario.localeCompare(b.horario)
           );
+          // Calcula o horário de início: primeiro horário de início
           const inicio = sortedHorarios[0].horario.substring(0, 5); // HH:MM
           // Calcula o horário de fim: último horário de início + 30 mins (assumindo blocos de 30 min)
           const lastStartTime = sortedHorarios[
             sortedHorarios.length - 1
           ].horario.substring(0, 5);
+          // Converte para Date para adicionar 30 minutos
           const [hours, minutes] = lastStartTime.split(':').map(Number);
           const endDate = new Date();
           // Usa uma data fixa para evitar problemas com horário de verão, apenas a hora importa
+
           endDate.setUTCHours(hours, minutes + 30, 0, 0);
           // Garante zeros à esquerda para horas/minutos
           const fimHours = String(endDate.getUTCHours()).padStart(2, '0');
@@ -145,12 +132,13 @@ export default function ExpedientePage() {
     }
   }, [selectedProfissionalId]); // Depende apenas de selectedProfissionalId
 
+  // Busca profissionais na montagem do componente e quando selectedProfissionalId muda
   useEffect(() => {
     fetchProfissionais();
-  }, [fetchProfissionais]); // Roda uma vez na montagem e se fetchProfissionais mudar (não deveria, a menos que a lógica de selectedProfissionalId mude)
+  }, [fetchProfissionais]);
 
+  // Busca expedientes quando o profissional selecionado muda
   useEffect(() => {
-    // Busca expedientes apenas quando um profissional é selecionado
     if (selectedProfissionalId) {
       fetchExpedientes();
     } else {
@@ -158,19 +146,18 @@ export default function ExpedientePage() {
       setExpedientes([]);
       setIsLoading(false);
     }
-    // Este useEffect depende APENAS da mudança de selectedProfissionalId.
-    // fetchExpedientes é estável devido ao useCallback, a menos que sua própria dependência (selectedProfissionalId) mude.
   }, [selectedProfissionalId, fetchExpedientes]);
 
   // --- Manipuladores de Eventos ---
 
+  // Manipulador para mudança de profissional
   const handleProfissionalChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setSelectedProfissionalId(e.target.value);
-    // fetchExpedientes será disparado pelo hook useEffect que observa selectedProfissionalId
   };
 
+  // Manipulador para abrir o modal
   const openModal = (
     mode: 'add' | 'edit',
     expediente?: HorarioExpediente,
@@ -178,6 +165,8 @@ export default function ExpedientePage() {
   ) => {
     setModalError(null);
     setModalMode(mode);
+
+    // Limpa o estado do modal antes de abrir
     if (mode === 'add' && selectedProfissionalId) {
       setCurrentExpediente(null);
       setModalFormData({
@@ -186,6 +175,8 @@ export default function ExpedientePage() {
         inicio: '',
         fim: '',
       });
+
+      // Se o dia da semana for passado, preenche o campo
     } else if (mode === 'edit' && expediente) {
       setCurrentExpediente(expediente);
       setModalFormData({
@@ -203,6 +194,7 @@ export default function ExpedientePage() {
     setIsModalOpen(true);
   };
 
+  // Manipulador para fechar o modal
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentExpediente(null);
@@ -215,12 +207,14 @@ export default function ExpedientePage() {
     setModalError(null);
   };
 
+  // Manipulador para mudanças no formulário do modal
   const handleModalChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setModalFormData({ ...modalFormData, [e.target.name]: e.target.value });
   };
 
+  // Manipulador para envio do formulário do modal
   const handleModalSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setModalError(null);
@@ -246,7 +240,7 @@ export default function ExpedientePage() {
     // --- Definição do Payload baseado no modo ---
     let payload: any;
     let url: string;
-    const method = modalMode === 'add' ? 'POST' : 'PUT'; // Mantém PUT para edição
+    const method = modalMode === 'add' ? 'POST' : 'PUT';
 
     if (modalMode === 'add') {
       payload = {
@@ -263,8 +257,7 @@ export default function ExpedientePage() {
         setIsSubmitting(false);
         return;
       }
-      // Garante que o payload para PUT inclua todos os campos necessários esperados pelo backend
-      // Esta estrutura envia o objeto completo, que é padrão para PUT.
+
       payload = {
         profissional: parseInt(modalFormData.profissional, 10), // Certifique-se que está correto e é necessário
         dia_semana: parseInt(modalFormData.dia_semana, 10), // Certifique-se que está correto e é necessário
@@ -273,7 +266,6 @@ export default function ExpedientePage() {
       };
       url = `${API_BASE_URL}/agenda/expediente/${currentExpediente.id}/`;
     }
-    // --- Fim da Definição do Payload ---
 
     console.log('Enviando:', { method, url, payload }); // DEBUG: Loga os detalhes da requisição
 
@@ -405,7 +397,7 @@ export default function ExpedientePage() {
         <div
           key={index}
           className={`p-3 border rounded bg-[var(--secondary)] border-[var(--primary)] transition-colors duration-150 ${
-            isClickable ? 'cursor-pointer hover:bg-pink-100' : '' // Adjusted hover color
+            isClickable ? 'cursor-pointer hover:bg-pink-100' : ''
           } ${isSubmitting ? 'opacity-70' : ''}`} // Diminui a opacidade se estiver enviando
           onClick={
             isClickable ? () => openModal('add', undefined, index) : undefined
@@ -423,33 +415,26 @@ export default function ExpedientePage() {
           aria-label={
             isClickable ? `Adicionar horário para ${diaNome}` : undefined
           }
-          aria-disabled={isSubmitting} // Indica estado desabilitado durante o envio
+          aria-disabled={isSubmitting}
         >
           <h3 className="text-lg font-semibold mb-2 text-[var(--accent)]">
-            {' '}
-            {/* Adjusted text color */}
             {diaNome}
           </h3>
           {hasExpediente ? (
             <ul className="space-y-1">
-              {' '}
-              {/* Reduced spacing */}
               {groupedExpedientes[index].map((exp) => (
                 <li
                   key={exp.id}
-                  className="flex justify-between items-center py-1 " // Adjusted padding
+                  className="flex justify-between items-center py-1 "
                 >
                   <span className="text-gray-700">
-                    {' '}
-                    {/* Adjusted text color */}
-                    <FaClock className="inline mr-2 text-white" />{' '}
-                    {/* Use accent color */}
+                    <FaClock className="inline mr-2 text-white" />
                     {exp.inicio} - {exp.fim}
                   </span>
                   <div className="space-x-2">
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering the div's onClick
+                        e.stopPropagation();
                         openModal('edit', exp);
                       }}
                       className="text-[var(--accent)] hover:text-pink-700 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -460,7 +445,7 @@ export default function ExpedientePage() {
                     </button>
                     <button
                       onClick={(e) => {
-                        e.stopPropagation(); // Prevent triggering the div's onClick
+                        e.stopPropagation();
                         handleDelete(exp.id);
                       }}
                       className="text-gray-400 hover:text-red-800 p-1 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -510,14 +495,10 @@ export default function ExpedientePage() {
           </button>
         </div>
       )}
+
       {/* Seleção de Profissional e Botão Adicionar (Horizontal Layout) */}
       <div className="mb-12 flex items-end gap-4">
-        {' '}
-        {/* Use flex and items-end */}
-        {/* Select Container */}
         <div className="flex-grow">
-          {' '}
-          {/* Takes available space */}
           <label
             htmlFor="profissional"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -556,23 +537,20 @@ export default function ExpedientePage() {
           className="flex-shrink-0 bg-[var(--accent)] text-white px-4 py-2 rounded flex items-center justify-center hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition duration-150 ease-in-out" // Use flex-shrink-0
           aria-label="Adicionar novo horário de expediente"
         >
-          <FaPlus className="mr-2" /> ADD {/* Changed text */}
+          <FaPlus className="mr-2" /> ADD
         </button>
       </div>
       {/* Exibição dos Expedientes */}
       <div className="space-y-2">{renderExpedientes()}</div>
+
       {/* MODAL ADICIONAR/EDITAR */}
       {isModalOpen && (
         <div className="absolute top-[80px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
-          {' '}
-          {/* Adjusted overlay */}
           <form
             onSubmit={handleModalSubmit}
-            className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black my-auto" // Adjusted modal container
+            className="bg-white p-6 rounded shadow-lg w-full max-w-md text-black my-auto"
           >
             <h2 className="text-xl text-[var(--accent)] font-semibold mb-4">
-              {' '}
-              {/* Adjusted title style */}
               {modalMode === 'add' ? 'Adicionar ' : 'Editar '}
               Expediente
             </h2>
@@ -580,7 +558,7 @@ export default function ExpedientePage() {
             {/* Exibição de Erro do Modal */}
             {modalError && (
               <div
-                className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3" // Adjusted error style
+                className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-3"
                 role="alert"
               >
                 <span className="block sm:inline">{modalError}</span>
@@ -595,13 +573,9 @@ export default function ExpedientePage() {
             />
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                {' '}
-                {/* Adjusted label color */}
                 Profissional
               </label>
               <p className="text-gray-900 bg-gray-100 px-3 py-2 rounded border border-[var(--border-primary)]">
-                {' '}
-                {/* Adjusted border */}
                 {profissionais.find(
                   (p) => String(p.id) === modalFormData.profissional
                 )?.nome_completo || 'N/A'}
@@ -612,7 +586,7 @@ export default function ExpedientePage() {
             <div className="mb-4">
               <label
                 htmlFor="dia_semana"
-                className="block text-sm font-medium text-gray-700 mb-1" // Adjusted label color
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Dia da Semana <span className="text-red-500">*</span>
               </label>
@@ -622,17 +596,16 @@ export default function ExpedientePage() {
                 value={modalFormData.dia_semana}
                 onChange={handleModalChange}
                 className={`w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] ${
-                  // Adjusted styles
                   modalMode === 'edit' ||
                   (modalMode === 'add' && modalFormData.dia_semana !== '')
-                    ? 'bg-gray-100 cursor-not-allowed' // Desabilita visualmente se editando ou dia pré-selecionado
-                    : 'bg-white text-[var(--text-secondary)]' // Added text color for normal state
+                    ? 'bg-gray-100 cursor-not-allowed'
+                    : 'bg-white text-[var(--text-secondary)]'
                 }`}
                 required
                 disabled={
-                  isSubmitting || // Desabilita se enviando
-                  modalMode === 'edit' || // Desabilita se editando
-                  (modalMode === 'add' && modalFormData.dia_semana !== '') // Desabilita se adicionando com dia pré-selecionado
+                  isSubmitting ||
+                  modalMode === 'edit' ||
+                  (modalMode === 'add' && modalFormData.dia_semana !== '')
                 }
               >
                 <option value="" disabled>
@@ -658,7 +631,7 @@ export default function ExpedientePage() {
             <div className="mb-4">
               <label
                 htmlFor="inicio"
-                className="block text-sm font-medium text-gray-700 mb-1" // Adjusted label color
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Horário Início <span className="text-red-500">*</span>
               </label>
@@ -668,10 +641,10 @@ export default function ExpedientePage() {
                 name="inicio"
                 value={modalFormData.inicio}
                 onChange={handleModalChange}
-                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white" // Adjusted styles
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white"
                 required
-                step="1800" // Intervalo de 30 minutos
-                disabled={isSubmitting} // Desabilita se enviando
+                step="1800"
+                disabled={isSubmitting}
               />
             </div>
 
@@ -679,7 +652,7 @@ export default function ExpedientePage() {
             <div className="mb-5">
               <label
                 htmlFor="fim"
-                className="block text-sm font-medium text-gray-700 mb-1" // Adjusted label color
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Horário Fim <span className="text-red-500">*</span>
               </label>
@@ -689,10 +662,10 @@ export default function ExpedientePage() {
                 name="fim"
                 value={modalFormData.fim}
                 onChange={handleModalChange}
-                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white" // Adjusted styles
+                className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white"
                 required
                 step="1800" // Intervalo de 30 minutos
-                disabled={isSubmitting} // Desabilita se enviando
+                disabled={isSubmitting}
               />
               <p className="text-xs text-gray-500 mt-1">
                 O sistema criará blocos de 30 minutos entre o início e o fim.
@@ -701,26 +674,22 @@ export default function ExpedientePage() {
 
             {/* Botões de Ação */}
             <div className="flex justify-end space-x-2 mt-6">
-              {' '}
-              {/* Adjusted spacing and margin */}
               <button
                 type="button"
                 onClick={closeModal}
-                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50 transition-colors" // Adjusted styles
-                disabled={isSubmitting} // Desabilita cancelar se enviando
+                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 disabled:opacity-50 transition-colors"
+                disabled={isSubmitting}
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 className={`px-4 py-2 rounded text-white disabled:opacity-50 disabled:cursor-wait transition-colors flex items-center ${
-                  // Adicionado flex items-center
-                  // Use accent for add, green for edit
                   modalMode === 'add'
                     ? 'bg-[var(--accent)] hover:bg-pink-700'
-                    : 'bg-[var(--accent)] hover:bg-green-700' // Pode manter a mesma cor ou diferenciar se preferir
+                    : 'bg-[var(--accent)] hover:bg-green-700'
                 }`}
-                disabled={isSubmitting} // Desabilita salvar se enviando
+                disabled={isSubmitting}
               >
                 {isSubmitting ? (
                   'Salvando...'
