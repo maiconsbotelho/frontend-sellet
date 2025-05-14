@@ -48,15 +48,6 @@ export default function LoginForm() {
         priority
       />
 
-      {/* Logo decorativa sobre a parede */}
-      {/* <Image
-        src="/logoSellet.svg"
-        alt="Logo decorativa"
-        width={140}
-        height={140}
-        className="absolute top-6 left-6  z-50 pointer-events-none select-none"
-      /> */}
-
       {/* Overlay rosado com blur */}
       <div className="absolute inset-0 bg-rose-100/30 backdrop-blur-sm z-10" />
 

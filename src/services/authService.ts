@@ -1,7 +1,7 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { WS_BASE } from '@/interface_ws/ws_link';
 
 export async function login(email: string, password: string) {
-  const response = await fetch(`${API_BASE_URL}/usuario/login/`, {
+  const response = await fetch(`${WS_BASE}/usuario/login/`, {
     method: 'POST',
     credentials: 'include', // envia e recebe cookies
     headers: { 'Content-Type': 'application/json' },
@@ -17,21 +17,21 @@ export async function login(email: string, password: string) {
 }
 
 export async function logout() {
-  await fetch(`${API_BASE_URL}/usuario/logout/`, {
+  await fetch(`${WS_BASE}/usuario/logout/`, {
     method: 'POST',
     credentials: 'include',
   });
 }
 
 export async function refreshToken() {
-  await fetch(`${API_BASE_URL}/usuario/refresh/`, {
+  await fetch(`${WS_BASE}/usuario/refresh/`, {
     method: 'POST',
     credentials: 'include',
   });
 }
 
 export async function getCurrentUser() {
-  const response = await fetch(`${API_BASE_URL}/usuario/me/`, {
+  const response = await fetch(`${WS_BASE}/usuario/me/`, {
     method: 'GET',
     credentials: 'include', // envia cookie com access_token
   });
