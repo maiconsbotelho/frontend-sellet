@@ -1,4 +1,3 @@
-// filepath: /home/maiconbotelho/crisdulabs/workspace/projetos-pessoais/sellet/frontend-sellet/src/components/layout/SplashScreenManager.tsx
 'use client';
 
 import { useEffect, useState, ReactNode } from 'react';
@@ -22,7 +21,6 @@ export default function SplashScreenManager({
       setShowContent(true);
     } else {
       sessionStorage.setItem('splashShown', 'true');
-      // O componente Splash chamará onComplete
     }
   }, []);
 
