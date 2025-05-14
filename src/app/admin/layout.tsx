@@ -1,5 +1,4 @@
-import Header from '@/components/ui/header';
-import Nav from '@/components/ui/nav';
+import Nav from '@/components/shared/nav';
 
 export default function AdminLayout({
   children,

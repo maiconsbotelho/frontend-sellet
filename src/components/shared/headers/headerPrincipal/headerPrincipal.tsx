@@ -3,11 +3,11 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useModal } from '@/context/modalPerfilContext';
-import ModalPerfil from '@/components/ui/modalPerfil';
+import ModalPerfil from '@/components/shared/modalPerfil';
 import LogoSellet from '@/../public/logo3.png';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 
-export default function Header() {
+export default function HeaderPrincipal() {
   const router = useRouter();
   const { isModalOpen, openModal } = useModal();
   const { user, isLoading } = useCurrentUser();

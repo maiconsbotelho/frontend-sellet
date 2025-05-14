@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { MenuToggle } from '@/components/landing/header/menu/menuToggle';
-import { MenuItems } from '@/components/landing/header/menu/menuItems';
+import { MenuToggle } from '@/components/landing/menu/menuToggle';
+import { MenuItems } from '@/components/landing/menu/menuItems';
 
 export default function Menu2() {
   const [isOpen, setIsOpen] = useState(false);

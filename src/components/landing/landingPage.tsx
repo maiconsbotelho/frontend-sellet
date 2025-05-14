@@ -1,26 +1,22 @@
 'use client';
 
 import Image from 'next/image';
-import Logo from '../ui/Logo';
+import Logo from '../shared/Logo';
 import { Playfair_Display } from 'next/font/google';
-import Menu from '../landing/header/menu/menu';
-import SecaoSobre from '../landing/sessoes/SecaoSobre';
-import Link from 'next/link';
+import Menu from './menu/menu';
 import BotaoAgendar from './botaoAgendar';
-import Rodape from '../landing/sessoes/Rodape';
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   weight: ['400', '700'],
 });
 
-export default function Home() {
+export default function LandingPage() {
   return (
     <main className="min-h-screen bg-[var(--vinho)] text-pink-900 font-sans">
-      {/* Header */}
       <header className="flex justify-between items-center p-4 bg-[var(--vinho)] shadow">
         <Logo />
-        <nav className="hidden md:flex gap-6 text-sm">
+        <nav className="hidden text-white md:flex gap-6 text-sm">
           <a href="#sobre">Sobre Nós</a>
           <a href="#galeria">Galeria</a>
           <a href="#localizacao">Localização</a>
@@ -48,9 +44,6 @@ export default function Home() {
             Agende online, sem complicações.
           </p>
           <BotaoAgendar />
-          {/* <button className="mt-12 bg-pink-500 hover:bg-pink-600 text-white font-semibold text-lg px-8 py-3 rounded-full shadow-lg transition-all">
-            <Link href={'/login'}>Agendar Agora</Link>
-          </button> */}
         </div>
       </section>
 
@@ -118,22 +111,6 @@ export default function Home() {
             essencial para a mente e corpo das mulheres. Auto estima tem
             prioridade aqui.
           </p>
-          {/* <p className="mb-3 text-lg text-justify">
-            A Séllet tem como prevalência o bem estar e aconchego do cliente.
-            Ser um lugar para você ter um colo e também a auto estima elevada e
-            devolvida. Risos e beleza andam juntos. Conversa e mate, se isso não
-            te alegrar, café tbm tem tá?! Rsrsrs O amor impera nessa casa.Amor
-            por unhas.
-          </p>
-
-          <p className="text-lg pb-7 text-justify">
-            Amor por cores.Amor por formas.Amor por pessoas. Amor por ver que
-            temos aqui em nossas mãos o que vc precisa para ser uma mulher mais
-            confiante e empoderada.Você é única e é isso que vamos te mostrar.
-            Vem conhecer. É um prazer mostrar nossa casa e te fazer parte dessa
-            selléta carta de clientes que são sempre essenciais e prioridade
-            para nossa casa!!
-          </p> */}
         </div>
       </section>
 

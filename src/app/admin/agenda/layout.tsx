@@ -1,4 +1,4 @@
-import Header from '@/components/ui/header';
+import HeaderPrincipal from '@/components/shared/headers/headerPrincipal/headerPrincipal';
 
 export default function AgendaLayout({
   children,
@@ -7,7 +7,7 @@ export default function AgendaLayout({
 }) {
   return (
     <div>
-      <Header />
+      <HeaderPrincipal />
       {children}
     </div>
   );

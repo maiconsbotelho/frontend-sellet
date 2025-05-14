@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Home2 from '@/components/home/home';
-import Splash from '@/components/home/splash';
+import LandingPage from '@/components/landing/landingPage';
+import Splash from '@/components/landing/splash';
 
 export default function Home() {
   const [showSplashComponent, setShowSplashComponent] = useState(true);
@@ -31,7 +31,7 @@ export default function Home() {
         <div className="animate-fade-in-slow">
           {' '}
           {/* Add your fade-in animation class here */}
-          <Home2 />
+          <LandingPage />
         </div>
       )}
     </>
