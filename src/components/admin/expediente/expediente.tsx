@@ -4,7 +4,7 @@ import { FaClock, FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 import ModalExpediente from './modalExpediente';
 import { DIAS_DA_SEMANA } from '@/utils/constants';
 import { HorarioExpediente } from '@/utils/types'; // Profissional and ExpedienteFormData are handled by the hook or Modal
-import useExpedienteManager from '@/hooks/useExpedienteManager';
+import useExpedienteManager from '@/hooks/expediente/useExpedienteManager';
 
 export default function ExpedientePage() {
   const {

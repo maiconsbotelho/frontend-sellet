@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import useApi from './useApi';
+import useApi from '../useApi';
 import useProfissionais from './useProfissionais';
 import useModalExpediente from './useModalExpediente';
 import { HorarioExpediente } from '@/utils/types';

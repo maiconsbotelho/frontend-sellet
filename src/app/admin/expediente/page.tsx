@@ -1,4 +1,4 @@
-import ExpedientePage from '@/components/admin/profissionais/expediente';
+import ExpedientePage from '@/components/admin/expediente/expediente';
 
 export default function ExpedientePages() {
   return (
