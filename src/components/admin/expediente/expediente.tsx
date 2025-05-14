@@ -1,10 +1,10 @@
 'use client';
 
-import { FaClock, FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
-import ModalExpediente from './modalExpediente';
 import { DIAS_DA_SEMANA } from '@/utils/constants';
-import { HorarioExpediente } from '@/utils/types'; // Profissional and ExpedienteFormData are handled by the hook or Modal
+import { HorarioExpediente } from '@/utils/types';
+import ModalExpediente from './modalExpediente';
 import useExpedienteManager from '@/hooks/expediente/useExpedienteManager';
+import { FaClock, FaEdit, FaPlus, FaTrash } from 'react-icons/fa';
 
 export default function ExpedientePage() {
   const {
@@ -15,7 +15,7 @@ export default function ExpedientePage() {
     isLoadingExpedientes,
     isSubmittingExpediente,
     pageError,
-    setPageError, // To allow closing the error message
+    setPageError,
     modalError,
     isModalOpen,
     modalMode,
@@ -148,7 +148,6 @@ export default function ExpedientePage() {
                   <FaPlus className="mr-2" /> Clique para adicionar horário
                 </>
               )}
-              {/* Mensagem de "Selecione um profissional" é tratada acima */}
             </div>
           )}
         </div>

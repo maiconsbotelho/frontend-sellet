@@ -9,9 +9,9 @@ export interface UseProfissionaisReturn {
   selectedProfissionalId: string | null;
   setSelectedProfissionalId: React.Dispatch<
     React.SetStateAction<string | null>
-  >; // Para flexibilidade
+  >;
   handleProfissionalChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  fetchProfissionais: () => Promise<void>; // Para permitir refetch manual se necessário
+  fetchProfissionais: () => Promise<void>;
 }
 
 export default function useProfissionais(): UseProfissionaisReturn {
@@ -43,7 +43,7 @@ export default function useProfissionais(): UseProfissionaisReturn {
     if (
       profissionais.length > 0 &&
       !selectedProfissionalId &&
-      !profissionaisError // Apenas define se não houver erro ao carregar profissionais
+      !profissionaisError
     ) {
       setSelectedProfissionalId(String(profissionais[0].id));
     }
@@ -53,8 +53,6 @@ export default function useProfissionais(): UseProfissionaisReturn {
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setSelectedProfissionalId(e.target.value);
-    // Poderia limpar erros relacionados à página aqui, se fizesse sentido neste hook isolado
-    // Por exemplo: setPageError(null); // Se pageError fosse gerenciado aqui
   };
 
   return {
