@@ -1,6 +1,6 @@
 // Em um novo arquivo, por exemplo: src/hooks/useAgenda.ts
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import useApi from './useApi'; // Supondo que useApi está no mesmo diretório ou ajustar o caminho
+import useApi from '../useApi'; // Supondo que useApi está no mesmo diretório ou ajustar o caminho
 import {
   Profissional,
   Cliente,

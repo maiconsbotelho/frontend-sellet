@@ -4,7 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { FaPlus } from 'react-icons/fa';
 import ModalAgenda from '@/components/admin/agenda/modalAgenda';
 import { AgendaSlot, AgendaLinha, AgendamentoFormData } from '@/utils/types';
-import useAgenda from '@/hooks/useAgenda';
+import useAgenda from '@/hooks/agenda/useAgenda';
 
 const initialFormState: AgendamentoFormData = {
   cliente: '',
