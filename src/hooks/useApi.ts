@@ -1,6 +1,5 @@
 import { useState, useCallback } from 'react';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { WS_BASE } from '@/interface_ws/ws_link';
 
 interface ApiConfig<T> {
   entityName: string;
@@ -40,7 +39,7 @@ export default function useApi<T extends { id: number | string }>({
     id?: number | string,
     queryParams?: Record<string, string>
   ) => {
-    let url = `${API_BASE_URL}${entityPath}`;
+    let url = `${WS_BASE}${entityPath}`;
     if (id) url += `/${id}`;
     if (queryParams) {
       const params = new URLSearchParams(queryParams);

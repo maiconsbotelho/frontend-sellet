@@ -9,8 +9,7 @@ import {
   AgendamentoFormData,
   AgendaSlot,
 } from '@/utils/types';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+import { WS_BASE } from '@/interface_ws/ws_link';
 
 export default function useAgenda() {
   // Hooks useApi para entidades primárias
@@ -84,7 +83,7 @@ export default function useAgenda() {
     setErrorAgenda(null);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/agenda/agendamentos/agenda/?profissional=${profissionalSelecionado}&data_inicial=${dataInicial}&data_final=${dataFinal}`
+        `${WS_BASE}/agenda/agendamentos/agenda/?profissional=${profissionalSelecionado}&data_inicial=${dataInicial}&data_final=${dataFinal}`
       );
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -116,7 +115,7 @@ export default function useAgenda() {
   ): Promise<boolean> => {
     // setLoadingModal(true); setErrorModal(null);
     try {
-      const response = await fetch(`${API_BASE_URL}/agenda/agendamentos/`, {
+      const response = await fetch(`${WS_BASE}/agenda/agendamentos/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -138,14 +137,11 @@ export default function useAgenda() {
   ): Promise<boolean> => {
     // ... lógica similar ao add ...
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/agenda/agendamentos/${id}/`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        }
-      );
+      const response = await fetch(`${WS_BASE}/agenda/agendamentos/${id}/`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
       if (!response.ok) {
         /* ... tratamento de erro ... */ throw new Error('Falha ao atualizar');
       }
@@ -159,12 +155,9 @@ export default function useAgenda() {
   const deleteAgendamento = async (id: number): Promise<boolean> => {
     // ... lógica similar ...
     try {
-      const response = await fetch(
-        `${API_BASE_URL}/agenda/agendamentos/${id}/`,
-        {
-          method: 'DELETE',
-        }
-      );
+      const response = await fetch(`${WS_BASE}/agenda/agendamentos/${id}/`, {
+        method: 'DELETE',
+      });
       if (!response.ok && response.status !== 204) {
         /* ... */ throw new Error('Falha ao excluir');
       }

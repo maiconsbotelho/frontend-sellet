@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import useApi from '../useApi';
+import useApi from '@/hooks/useApi';
 import { Profissional } from '@/utils/types'; // Certifique-se de que o caminho está correto
 
 export interface UseProfissionaisReturn {

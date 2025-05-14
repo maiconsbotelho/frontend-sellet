@@ -1,10 +1,9 @@
+import { WS_BASE } from '@/interface_ws/ws_link';
 import { useState, useEffect, useCallback } from 'react';
 import useApi from '../useApi';
 import useProfissionais from './useProfissionais';
 import useModalExpediente from './useModalExpediente';
 import { HorarioExpediente } from '@/utils/types';
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
 export default function useExpedienteManager() {
   const {
@@ -44,7 +43,7 @@ export default function useExpedienteManager() {
 
     try {
       const res = await fetch(
-        `${API_BASE_URL}/agenda/expediente/por_profissional/?profissional=${selectedProfissionalId}`
+        `${WS_BASE}/agenda/expediente/por_profissional/?profissional=${selectedProfissionalId}`
       );
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({

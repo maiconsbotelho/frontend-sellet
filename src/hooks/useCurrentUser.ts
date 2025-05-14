@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { WS_BASE } from '@/interface_ws/ws_link';
 
 export interface User {
   id: number;
@@ -11,14 +12,13 @@ export function useCurrentUser() {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [version, setVersion] = useState(0); // ← gatilho
-
   const refetch = useCallback(() => {
     setVersion((v) => v + 1); // força reexecução do efeito
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/usuario/me/`, {
+    fetch(`${WS_BASE}/usuario/me/`, {
       credentials: 'include',
     })
       .then((res) => {
