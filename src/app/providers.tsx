@@ -1,4 +1,5 @@
 import { ModalPerfilProvider } from '@/context/modalPerfilContext';
+
 export const ContextProvider = ({
   children,
 }: {
