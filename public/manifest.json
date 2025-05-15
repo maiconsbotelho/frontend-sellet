@@ -8,13 +8,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/logoLL.png",
-      "sizes": "130x130",
+      "src": "/logo/logo.png",
+      "sizes": "2048x2048",
       "type": "image/png"
     },
     {
-      "src": "/logoLL.png",
-      "sizes": "130x130",
+      "src": "/logo/logo.png",
+      "sizes": "2048x2048",
       "type": "image/png"
     }
   ]
