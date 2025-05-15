@@ -50,23 +50,23 @@ export default function LandingPage() {
       </section>
 
       {/* Benefícios */}
-      <section className="relative z-20  -mt-20 px-4 py-10 bg-pink-50 text-pink-800 rounded-tl-[100px]  ">
-        <div className="grid container pl-8 pt-4  mx-auto  grid-cols-2 md:flex md:justify-between gap-6 text-sm">
+      <section className="relative z-20  -mt-20 px-4 pt-5 bg-pink-50 text-pink-800 rounded-tl-[100px]  ">
+        <div className="grid container pl-8   mx-auto  grid-cols-2 md:flex md:justify-between gap-6 text-sm">
           <div className="flex items-center gap-2">
-            <span className="text-xl">✔️</span>
+            <span className="text-2xl">💕</span>
             <p className="text-left">Atendimento personalizado</p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xl">💅</span>
+            <span className="text-2xl">💅</span>
             <p className="text-left">
               Nail art & <br />
-              esmaltação em gel
+              Alongamento
             </p>
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-xl">📱</span>
+            <span className="text-2xl">📱</span>
             <p className="text-left">
               Agendamento <br />
               100% online
@@ -74,8 +74,8 @@ export default function LandingPage() {
           </div>
 
           <div className="flex items-center gap-2 ">
-            <span className="text-xl">⭐</span>
-            <p className="text-left">Avaliação 5 estrelas</p>
+            <span className="text-2xl">❄️</span>
+            <p className="text-left">Ambiente Climatizado</p>
           </div>
         </div>
       </section>
