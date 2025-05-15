@@ -45,7 +45,7 @@ export default function Nav() {
   const path = usePathname();
 
   return (
-    <div className="w-screen z-50 fixed left-0 bottom-0 pt-4 pb-6 px-4 bg-[var(--primary)] backdrop-blur-sm tracking-tighter overflow-hidden">
+    <div className="w-screen z-50 fixed left-0 bottom-0 pt-4 pb-4 px-4 bg-[var(--primary)] backdrop-blur-sm tracking-tighter overflow-hidden">
       {' '}
       {/* Adicionado overflow-hidden */}
       <div className="w-full flex overflow-x-auto space-x-6 pb-2 relative text-xs text-[var(--secondary)]">
