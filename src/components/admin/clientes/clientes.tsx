@@ -263,81 +263,83 @@ export default function ClientesPage() {
     });
 
   return (
-    <div className="p-6 pb-44 w-screen h-screen overscroll-none flex flex-col">
-      <div className="flex justify-between mb-12">
-        <input
-          type="text"
-          placeholder="Pesquisar clientes..."
-          className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <AddButton onClick={openAdd} disabled={isLoading} />
-      </div>
-
-      {apiError && !isAddOpen && !isEditOpen && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <span>{apiError}</span>
+    <div className="p-6 md:px-0 pb-44 w-screen h-screen overscroll-none ">
+      <div className="container mx-auto flex flex-col">
+        <div className="flex justify-between mb-12">
+          <input
+            type="text"
+            placeholder="Pesquisar clientes..."
+            className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <AddButton onClick={openAdd} disabled={isLoading} />
         </div>
-      )}
 
-      <ul className="flex-1 overflow-y-auto min-h-0 space-y-2 pb-44">
-        {isLoading && filtered.length === 0 && (
-          <li className="text-center text-gray-500 py-4">
-            Carregando clientes...
-          </li>
+        {apiError && !isAddOpen && !isEditOpen && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <span>{apiError}</span>
+          </div>
         )}
-        {!isLoading && filtered.length === 0 && (
-          <li className="text-center text-gray-500 py-4">
-            Nenhum cliente encontrado.
-          </li>
-        )}
-        {filtered.map((c) => (
-          <li
-            key={c.id}
-            className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
-          >
-            <div>
-              <span className="font-medium text-[var(--accent)]">
-                {c.nome_completo}
-              </span>
-              <span className="text-sm text-gray-500 block">{c.email}</span>
-            </div>
-            <button
-              onClick={() => openEdit(c)}
-              className="text-[var(--accent)] p-1"
-              aria-label={`Editar ${c.nome_completo}`}
+
+        <ul className="flex-1 overflow-y-auto min-h-0 space-y-2 pb-44">
+          {isLoading && filtered.length === 0 && (
+            <li className="text-center text-gray-500 py-4">
+              Carregando clientes...
+            </li>
+          )}
+          {!isLoading && filtered.length === 0 && (
+            <li className="text-center text-gray-500 py-4">
+              Nenhum cliente encontrado.
+            </li>
+          )}
+          {filtered.map((c) => (
+            <li
+              key={c.id}
+              className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
             >
-              <FaEdit />
-            </button>
-          </li>
-        ))}
-      </ul>
+              <div>
+                <span className="font-medium text-[var(--accent)]">
+                  {c.nome_completo}
+                </span>
+                <span className="text-sm text-gray-500 block">{c.email}</span>
+              </div>
+              <button
+                onClick={() => openEdit(c)}
+                className="text-[var(--accent)] p-1"
+                aria-label={`Editar ${c.nome_completo}`}
+              >
+                <FaEdit />
+              </button>
+            </li>
+          ))}
+        </ul>
 
-      <CrudModal
-        title="Novo Cliente"
-        isOpen={isAddOpen}
-        formData={form}
-        formFields={addFormFields}
-        onChange={handleChange}
-        onClose={closeModals}
-        onSubmit={handleAdd}
-        error={apiError}
-        isLoading={isLoading}
-      />
+        <CrudModal
+          title="Novo Cliente"
+          isOpen={isAddOpen}
+          formData={form}
+          formFields={addFormFields}
+          onChange={handleChange}
+          onClose={closeModals}
+          onSubmit={handleAdd}
+          error={apiError}
+          isLoading={isLoading}
+        />
 
-      <CrudModal
-        title="Editar Cliente"
-        isOpen={isEditOpen}
-        formData={form}
-        formFields={editFormFields}
-        onChange={handleChange}
-        onClose={closeModals}
-        onSubmit={handleEdit}
-        onDelete={handleDelete}
-        error={apiError}
-        isLoading={isLoading}
-      />
+        <CrudModal
+          title="Editar Cliente"
+          isOpen={isEditOpen}
+          formData={form}
+          formFields={editFormFields}
+          onChange={handleChange}
+          onClose={closeModals}
+          onSubmit={handleEdit}
+          onDelete={handleDelete}
+          error={apiError}
+          isLoading={isLoading}
+        />
+      </div>
     </div>
   );
 }

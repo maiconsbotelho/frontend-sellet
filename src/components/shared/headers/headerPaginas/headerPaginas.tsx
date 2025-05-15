@@ -22,29 +22,31 @@ export default function HeaderPaginas({ title, voltarFunc = null }: Props) {
 
   return (
     <div
-      className="fixed left-0 top-0 p-6 z-30  w-screen h-20 flex  justify-between items-center tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out
+      className="fixed left-0 top-0 p-6 md:px-0 z-30  w-screen h-20   bg-[var(--primary)] transition-[min-height] duration-700 ease-out
         "
     >
-      <div className="flex items-center gap-2">
-        {isClient && (
-          <FaArrowLeft
-            color="var(--text-primary)"
-            className="cursor-pointer"
-            onClick={() => router.back()}
+      <div className="container mx-auto flex justify-between items-center tracking-tight">
+        <div className="flex items-center gap-2">
+          {isClient && (
+            <FaArrowLeft
+              color="var(--text-primary)"
+              className="cursor-pointer"
+              onClick={() => router.back()}
+            />
+          )}
+          <p className="text-lg text-white font-semibold tracking-tighter">
+            {title}
+          </p>
+        </div>
+        <Link href={'/'}>
+          <Image
+            src={LogoSellet}
+            width={84}
+            height={34}
+            alt="Logo Motivou Levou"
           />
-        )}
-        <p className="text-lg text-white font-semibold tracking-tighter">
-          {title}
-        </p>
+        </Link>
       </div>
-      <Link href={'/'}>
-        <Image
-          src={LogoSellet}
-          width={84}
-          height={34}
-          alt="Logo Motivou Levou"
-        />
-      </Link>
     </div>
   );
 }

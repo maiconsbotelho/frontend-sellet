@@ -259,252 +259,260 @@ const Agenda = () => {
     isLoadingAgenda;
 
   return (
-    <div className="w-screen text-[#757575] mx-auto p-5">
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold text-[var(--accent)]">Agenda</h1>
-        <button
-          onClick={() => openModal('add')}
-          className="bg-[var(--accent)] text-white p-2 rounded-full disabled:opacity-50"
-          title="Novo Agendamento"
-          disabled={!profissionalSelecionado || isLoading}
-        >
-          <FaPlus />
-        </button>
-      </div>
-
-      {/* Controles */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
-        <div>
-          <label
-            htmlFor="profissional"
-            className="block text-sm font-medium mb-1"
+    <div className="w-screen text-[#757575] mx-auto p-5 md:px-0">
+      <div className="container mx-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-2xl font-bold text-[var(--accent)]">Agenda</h1>
+          <button
+            onClick={() => openModal('add')}
+            className="bg-[var(--accent)] text-white p-2 rounded-full disabled:opacity-50"
+            title="Novo Agendamento"
+            disabled={!profissionalSelecionado || isLoading}
           >
-            Profissional:
-          </label>
-          <select
-            id="profissional"
-            value={profissionalSelecionado || ''}
-            onChange={handleProfissionalChange}
-            className="w-full p-2 border border-[#E0E0E0] bg-[var(--primary)] rounded-md text-[var(--text-primary)]"
-            disabled={isLoadingProfissionais}
-          >
-            <option value="" disabled={profissionais.length > 0}>
-              -- Selecione --
-            </option>
-            {profissionais.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nome_completo}
-              </option>
-            ))}
-          </select>
+            <FaPlus />
+          </button>
         </div>
 
-        <div
-          className={`flex gap-4 ${
-            visao === 'dia' ? 'col-span-1' : 'col-span-1 md:col-span-1'
-          }`}
-        >
+        {/* Controles */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 items-end">
           <div>
             <label
-              htmlFor="dataInicial"
+              htmlFor="profissional"
               className="block text-sm font-medium mb-1"
             >
-              Data {visao === 'semana' ? 'Inicial' : ''}:
+              Profissional:
             </label>
-            <input
-              type="date"
-              id="dataInicial"
-              value={dataInicial}
-              onChange={(e) => handleDateChange(e, 'inicial')}
-              className="p-2 border text-[#212121] bg-[#FFFFFF] border-[#E0E0E0] rounded-md w-full"
-              disabled={isLoading}
-            />
+            <select
+              id="profissional"
+              value={profissionalSelecionado || ''}
+              onChange={handleProfissionalChange}
+              className="w-full p-2 border border-[#E0E0E0] bg-[var(--primary)] rounded-md text-[var(--text-primary)]"
+              disabled={isLoadingProfissionais}
+            >
+              <option value="" disabled={profissionais.length > 0}>
+                -- Selecione --
+              </option>
+              {profissionais.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.nome_completo}
+                </option>
+              ))}
+            </select>
           </div>
-          {visao === 'semana' && (
+
+          <div
+            className={`flex gap-4 ${
+              visao === 'dia' ? 'col-span-1' : 'col-span-1 md:col-span-1'
+            }`}
+          >
             <div>
               <label
-                htmlFor="dataFinal"
+                htmlFor="dataInicial"
                 className="block text-sm font-medium mb-1"
               >
-                Data Final:
+                Data {visao === 'semana' ? 'Inicial' : ''}:
               </label>
               <input
                 type="date"
-                id="dataFinal"
-                value={dataFinal}
-                min={dataInicial}
-                onChange={(e) => handleDateChange(e, 'final')}
+                id="dataInicial"
+                value={dataInicial}
+                onChange={(e) => handleDateChange(e, 'inicial')}
                 className="p-2 border text-[#212121] bg-[#FFFFFF] border-[#E0E0E0] rounded-md w-full"
                 disabled={isLoading}
               />
             </div>
-          )}
+            {visao === 'semana' && (
+              <div>
+                <label
+                  htmlFor="dataFinal"
+                  className="block text-sm font-medium mb-1"
+                >
+                  Data Final:
+                </label>
+                <input
+                  type="date"
+                  id="dataFinal"
+                  value={dataFinal}
+                  min={dataInicial}
+                  onChange={(e) => handleDateChange(e, 'final')}
+                  className="p-2 border text-[#212121] bg-[#FFFFFF] border-[#E0E0E0] rounded-md w-full"
+                  disabled={isLoading}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-end">
+            <button
+              onClick={alternarVisao}
+              className="text-[var(--text-primary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10"
+              disabled={isLoading}
+            >
+              Ver {visao === 'semana' ? 'Dia' : 'Semana'}
+            </button>
+          </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            onClick={alternarVisao}
-            className="text-[var(--text-primary)] bg-[var(--primary)] px-4 py-2 rounded-md hover:bg-gray-600 h-10"
-            disabled={isLoading}
-          >
-            Ver {visao === 'semana' ? 'Dia' : 'Semana'}
-          </button>
-        </div>
-      </div>
-
-      {/* Tabela de Agenda */}
-      {isLoadingAgenda && (
-        <p className="text-center mt-4">Carregando agenda...</p>
-      )}
-      {errorAgenda && (
-        <p className="text-center mt-4 text-red-500">
-          Erro ao carregar agenda: {errorAgenda}
-        </p>
-      )}
-
-      {!isLoadingAgenda && !errorAgenda && !profissionalSelecionado && (
-        <p className="text-center mt-4 text-gray-500">
-          Selecione um profissional para ver a agenda.
-        </p>
-      )}
-      {!isLoadingAgenda &&
-        !errorAgenda &&
-        profissionalSelecionado &&
-        agenda.length === 0 && (
-          <p className="text-center mt-4 text-gray-500">
-            Nenhum horário encontrado para o profissional e período
-            selecionados.
+        {/* Tabela de Agenda */}
+        {isLoadingAgenda && (
+          <p className="text-center mt-4">Carregando agenda...</p>
+        )}
+        {errorAgenda && (
+          <p className="text-center mt-4 text-red-500">
+            Erro ao carregar agenda: {errorAgenda}
           </p>
         )}
 
-      {!isLoadingAgenda &&
-        !errorAgenda &&
-        profissionalSelecionado &&
-        agenda.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
-              <thead>
-                <tr className="bg-[var(--primary)] text-[var(--text-primary)]">
-                  <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
-                    Horário
-                  </th>
-                  {dateKeys.map((dia) => (
-                    <th
-                      key={dia}
-                      className="border border-gray-300 p-2 font-semibold min-w-[100px]"
-                    >
-                      {new Date(dia + 'T00:00:00').toLocaleDateString('pt-BR', {
-                        weekday: 'short',
-                        day: '2-digit',
-                        month: '2-digit',
-                      })}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {agenda.map((linha, rowIndex) => (
-                  <tr key={linha.horario} className="hover:bg-gray-50 bg-white">
-                    <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
-                      {linha.horario}
-                    </td>
-                    {dateKeys.map((dia) => {
-                      const slot = linha[dia] as AgendaSlot;
-                      const horario = linha.horario;
-                      const agendamentoId = slot?.agendamento_id;
-
-                      if (rowIndex > 0 && agendamentoId) {
-                        const prevSlot = agenda[rowIndex - 1][
-                          dia
-                        ] as AgendaSlot;
-                        if (prevSlot?.agendamento_id === agendamentoId) {
-                          return null;
-                        }
-                      }
-
-                      const rowSpan =
-                        slot?.ocupado === true
-                          ? calculateRowSpan(
-                              agenda,
-                              rowIndex,
-                              dia,
-                              agendamentoId
-                            )
-                          : 1;
-
-                      let cellContent;
-                      let cellClassName =
-                        'border border-gray-300 p-0 text-center h-12 align-top';
-
-                      if (slot?.ocupado === null) {
-                        cellContent = (
-                          <span className="text-gray-400 italic text-xs p-1">
-                            Fora
-                          </span>
-                        );
-                      } else if (slot?.ocupado === true) {
-                        cellContent = (
-                          <button
-                            onClick={() =>
-                              openModal('edit', dia, horario, slot)
-                            }
-                            className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
-                            title={`Editar Agendamento: ${slot.nome_cliente} (${
-                              slot.servico_nome || 'Serviço'
-                            })`}
-                            style={{ height: `${rowSpan * 3}rem` }}
-                          >
-                            <span className="font-medium text-zinc-900 truncate">
-                              {slot.nome_cliente}
-                            </span>
-                            <span className="truncate">
-                              ({slot.servico_nome || 'Serviço'})
-                            </span>
-                          </button>
-                        );
-                      } else {
-                        cellContent = (
-                          <button
-                            onClick={() => openModal('add', dia, horario)}
-                            className="w-full h-full text-black bg-transparent font-bold hover:bg-[var(--primary)] rounded flex items-center justify-center text-xs px-5"
-                            title={`Agendar ${dia} ${horario}`}
-                          ></button>
-                        );
-                        cellClassName =
-                          'border border-gray-300 p-0 text-center h-12';
-                      }
-
-                      return (
-                        <td
-                          key={`${dia}-${linha.horario}`}
-                          className={cellClassName}
-                          rowSpan={rowSpan > 1 ? rowSpan : undefined}
-                        >
-                          {cellContent}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        {!isLoadingAgenda && !errorAgenda && !profissionalSelecionado && (
+          <p className="text-center mt-4 text-gray-500">
+            Selecione um profissional para ver a agenda.
+          </p>
         )}
+        {!isLoadingAgenda &&
+          !errorAgenda &&
+          profissionalSelecionado &&
+          agenda.length === 0 && (
+            <p className="text-center mt-4 text-gray-500">
+              Nenhum horário encontrado para o profissional e período
+              selecionados.
+            </p>
+          )}
 
-      <ModalAgenda
-        isOpen={isModalOpen}
-        mode={modalMode}
-        formData={modalFormData}
-        clientes={clientes} // Vem do hook
-        profissionais={profissionais} // Vem do hook
-        servicosDisponiveis={servicosDisponiveisParaProfissional} // Vem do hook
-        error={modalError}
-        loading={loadingModal}
-        onClose={closeModal}
-        onChange={handleModalChange}
-        onSubmit={handleFormSubmit}
-        onDelete={handleDeleteAgendamento}
-      />
+        {!isLoadingAgenda &&
+          !errorAgenda &&
+          profissionalSelecionado &&
+          agenda.length > 0 && (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse border border-gray-300 mt-4 mb-40 text-sm">
+                <thead>
+                  <tr className="bg-[var(--primary)] text-[var(--text-primary)]">
+                    <th className="border border-gray-300 p-2 font-semibold sticky left-0 bg-[var(--primary)] z-10">
+                      Horário
+                    </th>
+                    {dateKeys.map((dia) => (
+                      <th
+                        key={dia}
+                        className="border border-gray-300 p-2 font-semibold min-w-[100px]"
+                      >
+                        {new Date(dia + 'T00:00:00').toLocaleDateString(
+                          'pt-BR',
+                          {
+                            weekday: 'short',
+                            day: '2-digit',
+                            month: '2-digit',
+                          }
+                        )}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {agenda.map((linha, rowIndex) => (
+                    <tr
+                      key={linha.horario}
+                      className="hover:bg-gray-50 bg-white"
+                    >
+                      <td className="border border-gray-300 p-2 font-medium sticky left-0 bg-white z-10">
+                        {linha.horario}
+                      </td>
+                      {dateKeys.map((dia) => {
+                        const slot = linha[dia] as AgendaSlot;
+                        const horario = linha.horario;
+                        const agendamentoId = slot?.agendamento_id;
+
+                        if (rowIndex > 0 && agendamentoId) {
+                          const prevSlot = agenda[rowIndex - 1][
+                            dia
+                          ] as AgendaSlot;
+                          if (prevSlot?.agendamento_id === agendamentoId) {
+                            return null;
+                          }
+                        }
+
+                        const rowSpan =
+                          slot?.ocupado === true
+                            ? calculateRowSpan(
+                                agenda,
+                                rowIndex,
+                                dia,
+                                agendamentoId
+                              )
+                            : 1;
+
+                        let cellContent;
+                        let cellClassName =
+                          'border border-gray-300 p-0 text-center h-12 align-top';
+
+                        if (slot?.ocupado === null) {
+                          cellContent = (
+                            <span className="text-gray-400 italic text-xs p-1">
+                              Fora
+                            </span>
+                          );
+                        } else if (slot?.ocupado === true) {
+                          cellContent = (
+                            <button
+                              onClick={() =>
+                                openModal('edit', dia, horario, slot)
+                              }
+                              className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                              title={`Editar Agendamento: ${
+                                slot.nome_cliente
+                              } (${slot.servico_nome || 'Serviço'})`}
+                              style={{ height: `${rowSpan * 3}rem` }}
+                            >
+                              <span className="font-medium text-zinc-900 truncate">
+                                {slot.nome_cliente}
+                              </span>
+                              <span className="truncate">
+                                ({slot.servico_nome || 'Serviço'})
+                              </span>
+                            </button>
+                          );
+                        } else {
+                          cellContent = (
+                            <button
+                              onClick={() => openModal('add', dia, horario)}
+                              className="w-full h-full text-black bg-transparent font-bold hover:bg-[var(--primary)] rounded flex items-center justify-center text-xs px-5"
+                              title={`Agendar ${dia} ${horario}`}
+                            ></button>
+                          );
+                          cellClassName =
+                            'border border-gray-300 p-0 text-center h-12';
+                        }
+
+                        return (
+                          <td
+                            key={`${dia}-${linha.horario}`}
+                            className={cellClassName}
+                            rowSpan={rowSpan > 1 ? rowSpan : undefined}
+                          >
+                            {cellContent}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+        <ModalAgenda
+          isOpen={isModalOpen}
+          mode={modalMode}
+          formData={modalFormData}
+          clientes={clientes} // Vem do hook
+          profissionais={profissionais} // Vem do hook
+          servicosDisponiveis={servicosDisponiveisParaProfissional} // Vem do hook
+          error={modalError}
+          loading={loadingModal}
+          onClose={closeModal}
+          onChange={handleModalChange}
+          onSubmit={handleFormSubmit}
+          onDelete={handleDeleteAgendamento}
+        />
+      </div>
     </div>
   );
 };

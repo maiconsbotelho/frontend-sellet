@@ -23,7 +23,7 @@ export default function HeaderPrincipal() {
         className={`w-screen fixed z-50 p-6 h-20 flex flex-col justify-center items-start tracking-tight bg-[var(--primary)] transition-[min-height] duration-700 ease-out`}
       >
         <div
-          className={`w-full flex items-center justify-between transition-[margin-top] duration-500 ease-in-out ${
+          className={`w-full flex items-center container mx-auto justify-between transition-[margin-top] duration-500 ease-in-out ${
             isModalOpen ? 'mt-8' : ''
           }`}
         >

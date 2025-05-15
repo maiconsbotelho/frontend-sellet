@@ -14,7 +14,7 @@ const playfair = Playfair_Display({
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-[var(--vinho)]  text-pink-900 font-sans">
-      <header className="flex container mx-auto justify-between items-center py-4 px-4 md:px-0 bg-[var(--vinho)] shadow">
+      <header className="flex container mx-auto justify-between items-center p-4 md:px-0 bg-[var(--vinho)] shadow">
         <Logo />
         <div className="md:flex md:justify-end md:items-center md:gap-6">
           <nav className="hidden text-white md:flex md:justify-end md:items-end gap-6 text-sm">

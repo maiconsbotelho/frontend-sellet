@@ -193,91 +193,93 @@ export default function ServicosPage() {
   };
 
   return (
-    <div className="p-6 w-screen">
-      <div className="flex justify-between mb-12">
-        <input
-          type="text"
-          placeholder="Pesquisar serviços..."
-          className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-        <AddButton onClick={openAdd} disabled={isLoading} />
-      </div>
-
-      {apiError && !isAddOpen && !isEditOpen && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <span>{apiError}</span>
+    <div className="p-6 md:px-0 w-screen">
+      <div className="container mx-auto">
+        <div className="flex justify-between mb-12">
+          <input
+            type="text"
+            placeholder="Pesquisar serviços..."
+            className="border px-3 py-2 flex-grow mr-4 text-[var(--text-secondary)] bg-white border-[var(--border-primary)] rounded-md"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <AddButton onClick={openAdd} disabled={isLoading} />
         </div>
-      )}
 
-      <ul className="space-y-2">
-        {filtered.length > 0 ? (
-          filtered.map((s) => (
-            <li
-              key={s.id}
-              className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
-            >
-              <div>
-                <span className="font-medium text-[var(--accent)]">
-                  {s.nome}
-                </span>
-                <span className="text-sm text-gray-500 block">
-                  Preço: {formatCurrency(s.preco)}
-                </span>
-              </div>
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => openEdit(s)}
-                  className="text-[var(--accent)] p-1"
-                  aria-label={`Editar ${s.nome}`}
-                >
-                  <FaEdit />
-                </button>
-                <button
-                  onClick={() => {
-                    setCurrent(s);
-                    handleDelete();
-                  }}
-                  className="text-gray-400 hover:text-red-800 p-1"
-                  aria-label={`Excluir ${s.nome}`}
-                >
-                  <FaTrash />
-                </button>
-              </div>
-            </li>
-          ))
-        ) : (
-          <li className="text-center text-gray-500 py-4">
-            Nenhum serviço encontrado.
-          </li>
+        {apiError && !isAddOpen && !isEditOpen && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <span>{apiError}</span>
+          </div>
         )}
-      </ul>
 
-      <CrudModal
-        title="Novo Serviço"
-        isOpen={isAddOpen}
-        formData={form}
-        formFields={formFields}
-        onChange={handleChange}
-        onClose={closeModals}
-        onSubmit={handleAdd}
-        isLoading={isLoading}
-        error={apiError}
-      />
+        <ul className="space-y-2">
+          {filtered.length > 0 ? (
+            filtered.map((s) => (
+              <li
+                key={s.id}
+                className="flex justify-between items-center bg-[var(--secondary)] border p-3 rounded border-[var(--primary)]"
+              >
+                <div>
+                  <span className="font-medium text-[var(--accent)]">
+                    {s.nome}
+                  </span>
+                  <span className="text-sm text-gray-500 block">
+                    Preço: {formatCurrency(s.preco)}
+                  </span>
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => openEdit(s)}
+                    className="text-[var(--accent)] p-1"
+                    aria-label={`Editar ${s.nome}`}
+                  >
+                    <FaEdit />
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCurrent(s);
+                      handleDelete();
+                    }}
+                    className="text-gray-400 hover:text-red-800 p-1"
+                    aria-label={`Excluir ${s.nome}`}
+                  >
+                    <FaTrash />
+                  </button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li className="text-center text-gray-500 py-4">
+              Nenhum serviço encontrado.
+            </li>
+          )}
+        </ul>
 
-      <CrudModal
-        title="Editar Serviço"
-        isOpen={isEditOpen}
-        formData={form}
-        formFields={formFields}
-        onChange={handleChange}
-        onClose={closeModals}
-        onSubmit={handleEdit}
-        onDelete={handleDelete}
-        isLoading={isLoading}
-        error={apiError}
-      />
+        <CrudModal
+          title="Novo Serviço"
+          isOpen={isAddOpen}
+          formData={form}
+          formFields={formFields}
+          onChange={handleChange}
+          onClose={closeModals}
+          onSubmit={handleAdd}
+          isLoading={isLoading}
+          error={apiError}
+        />
+
+        <CrudModal
+          title="Editar Serviço"
+          isOpen={isEditOpen}
+          formData={form}
+          formFields={formFields}
+          onChange={handleChange}
+          onClose={closeModals}
+          onSubmit={handleEdit}
+          onDelete={handleDelete}
+          isLoading={isLoading}
+          error={apiError}
+        />
+      </div>
     </div>
   );
 }
