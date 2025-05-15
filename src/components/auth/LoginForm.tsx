@@ -19,22 +19,43 @@ export default function LoginForm() {
     setErro(null);
     setLoading(true);
 
-    try {
-      await login(email, password);
-      const user = await getCurrentUser();
+    await login(email, password);
 
-      if (user.tipo === 'CLIENTE') {
-        router.push('/cliente');
-      } else if (user.tipo === 'ADMIN') {
-        router.push('/admin/agenda');
-      } else {
-        router.push('/');
+    // aguarda 300ms para garantir que o cookie esteja salvo
+    setTimeout(async () => {
+      try {
+        const user = await getCurrentUser();
+
+        if (user.tipo === 'CLIENTE') {
+          router.push('/cliente');
+        } else if (user.tipo === 'ADMIN') {
+          router.push('/admin/agenda');
+        } else {
+          router.push('/');
+        }
+      } catch (err: any) {
+        setErro(err.message || 'Erro ao obter usuário após login');
+      } finally {
+        setLoading(false);
       }
-    } catch (err: any) {
-      setErro(err.message || 'Erro ao fazer login');
-    } finally {
-      setLoading(false);
-    }
+    }, 300);
+
+    // try {
+    //   await login(email, password);
+    //   const user = await getCurrentUser();
+
+    //   if (user.tipo === 'CLIENTE') {
+    //     router.push('/cliente');
+    //   } else if (user.tipo === 'ADMIN') {
+    //     router.push('/admin/agenda');
+    //   } else {
+    //     router.push('/');
+    //   }
+    // } catch (err: any) {
+    //   setErro(err.message || 'Erro ao fazer login');
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   return (
