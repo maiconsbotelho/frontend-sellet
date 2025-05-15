@@ -38,7 +38,7 @@ export default function LoginForm() {
       } finally {
         setLoading(false);
       }
-    }, 300);
+    }, 500);
 
     // try {
     //   await login(email, password);
