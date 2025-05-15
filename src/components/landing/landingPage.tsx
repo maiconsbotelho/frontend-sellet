@@ -50,7 +50,7 @@ export default function LandingPage() {
       </section>
 
       {/* Benefícios */}
-      <section className="relative z-20  -mt-20 px-4 pt-5 bg-pink-50 text-pink-800 rounded-tl-[100px]  ">
+      <section className="relative z-20  -mt-20 px-4 pt-5 md:py-10 bg-pink-50 text-pink-800 rounded-tl-[100px]  ">
         <div className="grid container pl-8   mx-auto  grid-cols-2 md:flex md:justify-between gap-6 text-sm">
           <div className="flex items-center gap-2">
             <span className="text-2xl">💕</span>
