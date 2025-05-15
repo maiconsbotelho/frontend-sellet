@@ -9,12 +9,12 @@
   "icons": [
     {
       "src": "/logoLL.png",
-      "sizes": "192x192",
+      "sizes": "130x130",
       "type": "image/png"
     },
     {
       "src": "/logoLL.png",
-      "sizes": "512x512",
+      "sizes": "130x130",
       "type": "image/png"
     }
   ]

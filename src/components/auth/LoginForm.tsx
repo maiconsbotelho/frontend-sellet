@@ -2,7 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { login, getCurrentUser } from '@/services/authService';
+// import { login, getCurrentUser } from '@/services/authService';
+import { login, getCurrentUserSafely } from '@/services/authService';
+
 import Image from 'next/image';
 import { FiMail, FiLock } from 'react-icons/fi';
 
@@ -24,7 +26,7 @@ export default function LoginForm() {
     // aguarda 300ms para garantir que o cookie esteja salvo
     setTimeout(async () => {
       try {
-        const user = await getCurrentUser();
+        const user = await getCurrentUserSafely();
 
         if (user.tipo === 'CLIENTE') {
           router.push('/cliente');
