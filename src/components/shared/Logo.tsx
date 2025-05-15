@@ -9,7 +9,7 @@ export default function Logo() {
         alt="Logo"
         width={100}
         height={100}
-        className="block sm:hidden"
+        className="block "
       />
     </Link>
   );
