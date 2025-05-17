@@ -2,6 +2,7 @@
 
 import { FaTrash, FaChevronDown, FaChevronUp, FaSave } from 'react-icons/fa';
 import React, { useState, useEffect } from 'react';
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 export interface FormField {
   name: string;
@@ -47,6 +48,7 @@ export default function CrudModal({
   isLoading,
   error,
 }: CrudModalProps) {
+  const [showPassword, setShowPassword] = useState<Record<string, boolean>>({});
   const [openCollapsibles, setOpenCollapsibles] = useState<
     Record<string, boolean>
   >({});
@@ -156,10 +158,9 @@ export default function CrudModal({
             }
 
             const isTextArea = field.type === 'textarea';
+            const isPassword = field.type === 'password';
             const colSpan =
-              isTextArea || field.type === 'password'
-                ? 'md:col-span-2'
-                : 'col-span-1'; // Password and textarea full width
+              isTextArea || isPassword ? 'md:col-span-2' : 'col-span-1';
 
             return (
               <div
@@ -192,11 +193,42 @@ export default function CrudModal({
                     maxLength={field.maxLength}
                     required={field.required}
                   />
+                ) : isPassword ? (
+                  <div className="relative">
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type={showPassword[field.name] ? 'text' : 'password'}
+                      value={formData[field.name] || ''}
+                      onChange={onChange}
+                      placeholder={field.placeholder}
+                      maxLength={field.maxLength}
+                      required={field.required}
+                      className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      className="absolute top-2.5 right-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                      onClick={() =>
+                        setShowPassword((prev) => ({
+                          ...prev,
+                          [field.name]: !prev[field.name],
+                        }))
+                      }
+                      aria-label={
+                        showPassword[field.name]
+                          ? 'Ocultar senha'
+                          : 'Exibir senha'
+                      }
+                    >
+                      {showPassword[field.name] ? <FiEyeOff /> : <FiEye />}
+                    </button>
+                  </div>
                 ) : (
                   <input
                     id={field.name}
                     name={field.name}
-                    // For 'number' type, ensure it's actually 'number', otherwise default to 'text' or field.type
                     type={field.type === 'number' ? 'number' : field.type}
                     value={formData[field.name] || ''}
                     onChange={onChange}

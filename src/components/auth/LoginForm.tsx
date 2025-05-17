@@ -2,11 +2,10 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-// import { login, getCurrentUser } from '@/services/authService';
 import { login, getCurrentUserSafely } from '@/services/authService';
+import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 
 import Image from 'next/image';
-import { FiMail, FiLock } from 'react-icons/fi';
 
 export default function LoginForm() {
   const router = useRouter();
@@ -15,6 +14,7 @@ export default function LoginForm() {
   const [password, setPassword] = useState('');
   const [erro, setErro] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,23 +41,6 @@ export default function LoginForm() {
         setLoading(false);
       }
     }, 500);
-
-    // try {
-    //   await login(email, password);
-    //   const user = await getCurrentUser();
-
-    //   if (user.tipo === 'CLIENTE') {
-    //     router.push('/cliente');
-    //   } else if (user.tipo === 'ADMIN') {
-    //     router.push('/admin/agenda');
-    //   } else {
-    //     router.push('/');
-    //   }
-    // } catch (err: any) {
-    //   setErro(err.message || 'Erro ao fazer login');
-    // } finally {
-    //   setLoading(false);
-    // }
   };
 
   return (
@@ -126,18 +109,28 @@ export default function LoginForm() {
               <FiLock className="absolute top-3.5 left-3 text-gray-400" />
               <input
                 id="password"
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-rose-300 transition"
                 placeholder="••••••••"
               />
+              <button
+                type="button"
+                tabIndex={-1}
+                className="absolute top-3.5 right-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? 'Ocultar senha' : 'Exibir senha'}
+              >
+                {showPassword ? <FiEyeOff /> : <FiEye />}
+              </button>
             </div>
           </div>
 
           <button
             type="submit"
+            tabIndex={1}
             disabled={loading}
             className="w-full bg-rose-500 hover:bg-rose-600 text-white font-semibold py-3 rounded-lg shadow-lg transition-all duration-200 disabled:opacity-60"
           >
