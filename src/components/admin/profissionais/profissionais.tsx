@@ -58,6 +58,7 @@ export default function ProfissionaisPage() {
     },
   ];
 
+  // Remove a senha do formulário de edição, mas adiciona um campo para alterar a senha
   const editFormFields = formFields
     .filter((f) => f.name !== 'password')
     .concat({
