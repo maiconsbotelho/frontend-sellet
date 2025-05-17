@@ -50,8 +50,21 @@ export default function ProfissionaisPage() {
       required: true,
     },
     { name: 'email', label: 'E-mail', type: 'email', required: true },
-    { name: 'password', label: 'Senha', type: 'password' },
+    {
+      name: 'password',
+      label: 'Senha (mín. 6 caracteres)',
+      type: 'password',
+      // Senha não é obrigatória na edição, apenas se for alterada
+    },
   ];
+
+  const editFormFields = formFields
+    .filter((f) => f.name !== 'password')
+    .concat({
+      name: 'password',
+      label: 'Nova Senha (deixe em branco para não alterar)',
+      type: 'password',
+    });
 
   const fetchProfessionals = useCallback(async () => {
     await fetchProfessionalsApi({ tipo: 'PROFISSIONAL' });
@@ -121,11 +134,20 @@ export default function ProfissionaisPage() {
     if (!current) return;
     setApiError(null);
 
-    const putData = {
+    const putData: Partial<Profissional> = {
       email: form.email,
       nome_completo: form.nome_completo,
       tipo: 'PROFISSIONAL',
     };
+
+    // Só envia a senha se for preenchida e válida
+    if (form.password && form.password.length > 0) {
+      if (form.password.length < 6) {
+        setApiError('A nova senha deve ter pelo menos 6 caracteres.');
+        return;
+      }
+      putData.password = form.password;
+    }
 
     const updated = await updateProfessionalApi(current.id, putData);
     if (updated) {
@@ -224,7 +246,7 @@ export default function ProfissionaisPage() {
           title="Editar Profissional"
           isOpen={isEditOpen}
           formData={form}
-          formFields={formFields.filter((f) => f.name !== 'password')}
+          formFields={editFormFields}
           onChange={handleChange}
           onClose={closeModals}
           onSubmit={handleEdit}
