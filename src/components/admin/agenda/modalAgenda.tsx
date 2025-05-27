@@ -43,7 +43,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-[80px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
+    <div className="fixed top-[80px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
       <form
         onSubmit={onSubmit}
         className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black"
