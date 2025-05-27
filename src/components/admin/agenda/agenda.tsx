@@ -449,9 +449,14 @@ const Agenda = () => {
 
                         if (slot?.ocupado === null) {
                           cellContent = (
-                            <span className="text-gray-400 italic text-xs p-1">
+                            <button
+                              onClick={() => openModal('add', dia, horario)}
+                              className="w-full h-full text-gray-400 italic text-xs p-1 hover:bg-gray-100 rounded"
+                              title={`Agendar ${dia} ${horario} (fora do expediente)`}
+                              type="button"
+                            >
                               Fora
-                            </span>
+                            </button>
                           );
                         } else if (slot?.ocupado === true) {
                           cellContent = (
