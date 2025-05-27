@@ -1,4 +1,3 @@
-// components/agenda/ModalAgenda.tsx
 'use client';
 
 import React from 'react';
@@ -9,6 +8,7 @@ import {
   Servico,
   AgendamentoFormData,
 } from '@/utils/types';
+
 interface ModalAgendaProps {
   isOpen: boolean;
   mode: 'add' | 'edit';
@@ -26,7 +26,6 @@ interface ModalAgendaProps {
   onDelete: () => void;
 }
 
-// ...existing code...
 const ModalAgenda: React.FC<ModalAgendaProps> = ({
   isOpen,
   mode,
@@ -47,20 +46,18 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
     <div className="absolute top-[80px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
       <form
         onSubmit={onSubmit}
-        className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black" // Removed relative my-8
+        className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black"
       >
-        {/* Removed the explicit 'X' close button to match crudModal behavior */}
         <h2 className="text-xl font-semibold mb-4 text-[var(--accent)]">
           {mode === 'add' ? 'Novo Agendamento' : 'Editar Agendamento'}
         </h2>
 
         {error && (
           <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-4" // Changed mb-3 to mb-4
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-4"
             role="alert"
           >
-            <span className="block sm:inline whitespace-pre-line">{error}</span>{' '}
-            {/* Added whitespace-pre-line */}
+            <span className="block sm:inline whitespace-pre-line">{error}</span>
           </div>
         )}
 
@@ -155,7 +152,27 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               value={formData.hora}
               onChange={onChange}
               required
-              step="1800" // 30 minutes
+              step="1800"
+              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="duracao_personalizada"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Duração personalizada (minutos)
+            </label>
+            <input
+              id="duracao_personalizada"
+              name="duracao_personalizada"
+              type="number"
+              min={10}
+              step={5}
+              value={formData.duracao_personalizada || ''}
+              onChange={onChange}
+              placeholder="Deixe em branco para usar o padrão"
               className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -172,7 +189,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
                 )?.nome_completo || 'N/A'
               }
               readOnly
-              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600" // Kept bg-gray-100 for readonly distinct look
+              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600"
             />
             <input
               type="hidden"
@@ -183,21 +200,18 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
         </div>
 
         <div className="flex justify-between py-12 items-center">
-          {/* Removed mt-6 */}
-          {mode === 'edit' &&
-            onDelete && ( // Added check for onDelete prop
-              <button
-                type="button"
-                onClick={onDelete}
-                disabled={loading}
-                className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700 disabled:opacity-50"
-              >
-                <FaTrash className="mr-2" />{' '}
-                {loading ? 'Excluindo...' : 'Excluir'}
-              </button>
-            )}
+          {mode === 'edit' && onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={loading}
+              className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700 disabled:opacity-50"
+            >
+              <FaTrash className="mr-2" />{' '}
+              {loading ? 'Excluindo...' : 'Excluir'}
+            </button>
+          )}
           <div className="flex gap-2">
-            {/* Added pb-16 pt-4 */}
             <button
               type="button"
               onClick={onClose}
@@ -209,7 +223,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700 disabled:opacity-50 flex items-center" // Adicionado flex items-center
+              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700 disabled:opacity-50 flex items-center"
             >
               {loading ? (
                 'Salvando...'

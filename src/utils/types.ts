@@ -75,4 +75,5 @@ export type AgendamentoFormData = {
   servico: string; // Store ID as string
   data: string; // YYYY-MM-DD
   hora: string; // HH:MM
+  duracao_personalizada?: number; // Optional, in minutes
 };

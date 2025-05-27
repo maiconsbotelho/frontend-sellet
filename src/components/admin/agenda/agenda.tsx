@@ -180,13 +180,17 @@ const Agenda = () => {
       return;
     }
 
-    const payload = {
+    const payload: any = {
       cliente: clienteId,
       profissional: profissionalId,
       servico: servicoId,
       data: formData.data,
       hora: formData.hora,
     };
+
+    if ('duracao_personalizada' in formData && formData.duracao_personalizada) {
+      payload.duracao_personalizada = Number(formData.duracao_personalizada);
+    }
 
     let success = false;
     try {
