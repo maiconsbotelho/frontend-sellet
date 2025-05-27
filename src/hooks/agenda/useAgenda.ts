@@ -118,6 +118,7 @@ export default function useAgenda() {
       const response = await fetch(`${WS_BASE}/agenda/agendamentos/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
@@ -140,6 +141,7 @@ export default function useAgenda() {
       const response = await fetch(`${WS_BASE}/agenda/agendamentos/${id}/`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
@@ -157,6 +159,7 @@ export default function useAgenda() {
     try {
       const response = await fetch(`${WS_BASE}/agenda/agendamentos/${id}/`, {
         method: 'DELETE',
+        credentials: 'include',
       });
       if (!response.ok && response.status !== 204) {
         /* ... */ throw new Error('Falha ao excluir');
