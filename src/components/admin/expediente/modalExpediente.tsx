@@ -1,6 +1,7 @@
 import { FaSave } from 'react-icons/fa';
 import { Profissional, ExpedienteFormData } from '@/utils/types';
 import { DIAS_DA_SEMANA } from '@/utils/constants';
+import useHorariosEstabelecimento from '@/hooks/expediente/useHorariosEstabelecimento';
 
 interface ModalExpedienteProps {
   isOpen: boolean;
@@ -27,6 +28,13 @@ export default function ModalExpediente({
   isSubmitting,
   profissionais,
 }: ModalExpedienteProps) {
+  const {
+    horarios,
+    loading,
+    error: horariosError,
+  } = useHorariosEstabelecimento();
+  console.log('Horários recebidos:', horarios);
+
   if (!isOpen) return null;
 
   return (
@@ -113,17 +121,27 @@ export default function ModalExpediente({
           >
             Horário Início <span className="text-red-500">*</span>
           </label>
-          <input
-            type="time"
+          <select
             id="inicio"
             name="inicio"
             value={formData.inicio}
             onChange={onChange}
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white"
             required
-            step="1800"
-            disabled={isSubmitting}
-          />
+            disabled={isSubmitting || loading}
+            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white"
+          >
+            <option value="" disabled>
+              Selecione...
+            </option>
+            {horarios.map((h) => (
+              <option
+                key={typeof h === 'object' ? h.id : h}
+                value={typeof h === 'object' ? h.id : h}
+              >
+                {typeof h === 'object' ? h.id : h}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="mb-5">
@@ -133,17 +151,27 @@ export default function ModalExpediente({
           >
             Horário Fim <span className="text-red-500">*</span>
           </label>
-          <input
-            type="time"
+          <select
             id="fim"
             name="fim"
             value={formData.fim}
             onChange={onChange}
-            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white"
             required
-            step="1800"
-            disabled={isSubmitting}
-          />
+            disabled={isSubmitting || loading}
+            className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border-primary)] disabled:bg-gray-100 text-[var(--text-secondary)] bg-white"
+          >
+            <option value="" disabled>
+              Selecione...
+            </option>
+            {horarios.map((h) => {
+              const value = typeof h === 'object' ? h.id : h;
+              return (
+                <option key={value} value={value}>
+                  {value}
+                </option>
+              );
+            })}
+          </select>
           <p className="text-xs text-gray-500 mt-1">
             O sistema criará blocos de 30 minutos entre o início e o fim.
           </p>
