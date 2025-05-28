@@ -76,4 +76,7 @@ export type AgendamentoFormData = {
   data: string; // YYYY-MM-DD
   hora: string; // HH:MM
   duracao_personalizada?: number; // Optional, in minutes
+  recorrencia?: string; // ou number
+  repeticoes?: string; // ou number
+  recorrencia_id?: string;
 };

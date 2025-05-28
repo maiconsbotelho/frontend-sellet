@@ -62,6 +62,7 @@ const Agenda = () => {
   const [modalFormData, setModalFormData] =
     useState<AgendamentoFormData>(initialFormState);
   const [modalError, setModalError] = useState<string | null>(null);
+  const { deleteRecorrencia } = useAgenda();
 
   const handleProfissionalChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -191,6 +192,11 @@ const Agenda = () => {
     if ('duracao_personalizada' in formData && formData.duracao_personalizada) {
       payload.duracao_personalizada = Number(formData.duracao_personalizada);
     }
+    // ...existing code...
+    if (formData.recorrencia)
+      payload.recorrencia = Number(formData.recorrencia);
+    if (formData.repeticoes) payload.repeticoes = Number(formData.repeticoes);
+    // ...existing code...
 
     let success = false;
     try {
@@ -248,6 +254,19 @@ const Agenda = () => {
       setModalError(error.message || 'Ocorreu um erro ao excluir.');
     } finally {
       setLoadingModal(false);
+    }
+  };
+
+  const handleDeleteRecorrencia = async () => {
+    if (!modalFormData.recorrencia_id) return;
+    setLoadingModal(true);
+    setModalError(null);
+    const ok = await deleteRecorrencia(modalFormData.recorrencia_id);
+    setLoadingModal(false);
+    if (ok) {
+      setIsModalOpen(false);
+    } else {
+      setModalError('Falha ao excluir recorrência.');
     }
   };
 
@@ -520,6 +539,7 @@ const Agenda = () => {
           onChange={handleModalChange}
           onSubmit={handleFormSubmit}
           onDelete={handleDeleteAgendamento}
+          onDeleteRecorrencia={handleDeleteRecorrencia}
         />
       </div>
     </div>
