@@ -215,6 +215,28 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
 
           <div>
             <label
+              htmlFor="status"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Situação
+            </label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status || 'AGENDADO'}
+              onChange={onChange}
+              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              disabled={mode === 'add'} // Só permite editar no modo 'edit'
+            >
+              <option value="AGENDADO">Agendado</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+
+          <div>
+            <label
               htmlFor="recorrencia"
               className="block text-sm font-medium text-gray-700 mb-1"
             >

@@ -33,6 +33,17 @@ const calculateRowSpan = (
   return span;
 };
 
+function getStatusCellClass(status?: string) {
+  switch (status) {
+    case 'CONCLUIDO':
+      return 'bg-green-100 border-green-500 hover:bg-green-200';
+    case 'CANCELADO':
+      return 'bg-gray-200 border-gray-400 hover:bg-gray-300 text-gray-400';
+    default:
+      return 'bg-[#fadadd] border-[var(--primary)] hover:bg-red-200';
+  }
+}
+
 const Agenda = () => {
   const {
     profissionais,
@@ -142,6 +153,8 @@ const Agenda = () => {
         servico: String(agendamento.servico_id || ''),
         data: data,
         hora: hora.substring(0, 5),
+        status: agendamento.status || 'AGENDADO',
+        recorrencia_id: agendamento.recorrencia_id,
       });
     } else {
       setModalFormData({
@@ -188,6 +201,9 @@ const Agenda = () => {
       data: formData.data,
       hora: formData.hora,
     };
+    if (formData.status) {
+      payload.status = formData.status;
+    }
 
     if ('duracao_personalizada' in formData && formData.duracao_personalizada) {
       payload.duracao_personalizada = Number(formData.duracao_personalizada);
@@ -483,7 +499,9 @@ const Agenda = () => {
                               onClick={() =>
                                 openModal('edit', dia, horario, slot)
                               }
-                              className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                              className={`w-full h-full text-left p-1 border-2 rounded text-xs flex flex-col gap-1 justify-center ${getStatusCellClass(
+                                slot.status
+                              )}`}
                               title={`Editar Agendamento: ${
                                 slot.nome_cliente
                               } (${slot.servico_nome || 'Serviço'})`}

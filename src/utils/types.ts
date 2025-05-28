@@ -61,6 +61,8 @@ export type AgendaSlot = {
   cliente_id?: number;
   servico_id?: number;
   servico_nome?: string;
+  status?: 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO';
+  recorrencia_id?: string; // ID for recurring appointments
 };
 
 export type AgendaLinha = {
@@ -79,4 +81,5 @@ export type AgendamentoFormData = {
   recorrencia?: string; // ou number
   repeticoes?: string; // ou number
   recorrencia_id?: string;
+  status?: 'AGENDADO' | 'CONCLUIDO' | 'CANCELADO';
 };
