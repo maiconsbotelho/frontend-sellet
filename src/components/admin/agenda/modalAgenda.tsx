@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import ClienteSelectModal from '@/components/shared/clienteSelectModal/clienteSelectModal';
+import { useState, useMemo } from 'react';
 import { FaTrash, FaSave } from 'react-icons/fa';
 import {
   Profissional,
@@ -42,10 +43,24 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
   onDelete,
   onDeleteRecorrencia,
 }) => {
+  const [clienteSearch, setClienteSearch] = useState('');
+  const [clienteModalOpen, setClienteModalOpen] = useState(false);
+  const clienteSelecionado = clientes.find(
+    (c) => String(c.id) === String(formData.cliente)
+  );
+
+  const clientesFiltrados = useMemo(
+    () =>
+      clientes.filter((c) =>
+        c.nome_completo.toLowerCase().includes(clienteSearch.toLowerCase())
+      ),
+    [clientes, clienteSearch]
+  );
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-[80px] inset-0 pb-[80px] bg-black bg-opacity-50 flex items-center justify-center z-20 ">
+    <div className="fixed top-[80px] inset-0 pb-[80px] bg-white bg-opacity-50 flex items-center justify-center z-20 ">
       <form
         onSubmit={onSubmit}
         className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black max-h-[calc(100vh-160px)] overflow-y-auto"
@@ -71,23 +86,26 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
             >
               Cliente
             </label>
-            <select
-              id="cliente"
-              name="cliente"
-              value={formData.cliente}
-              onChange={onChange}
-              required
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <button
+              type="button"
+              onClick={() => setClienteModalOpen(true)}
+              className="w-full border px-3 py-2 rounded mb-2 text-left bg-white hover:bg-blue-50"
             >
-              <option value="" disabled>
-                -- Selecione --
-              </option>
-              {clientes.map((c) => (
-                <option key={c.id} value={String(c.id)}>
-                  {c.nome_completo}
-                </option>
-              ))}
-            </select>
+              {clienteSelecionado
+                ? clienteSelecionado.nome_completo
+                : 'Selecionar cliente...'}
+            </button>
+            <input type="hidden" name="cliente" value={formData.cliente} />
+            <ClienteSelectModal
+              isOpen={clienteModalOpen}
+              clientes={clientes}
+              onClose={() => setClienteModalOpen(false)}
+              onSelect={(id) => {
+                onChange({
+                  target: { name: 'cliente', value: id },
+                } as any);
+              }}
+            />
           </div>
           <div>
             <label
