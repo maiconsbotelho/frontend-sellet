@@ -215,12 +215,12 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               <option value="4">A cada 4 semanas</option>
             </select>
           </div>
-          <div>
+          <div className="flex justify-start mt-8 items-center gap-4">
             <label
               htmlFor="repeticoes"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Repetir por
+              Quantos agendamentos?
             </label>
             <div className="flex items-center gap-2">
               <button
@@ -236,7 +236,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
                 disabled={
                   !formData.recorrencia || Number(formData.repeticoes) <= 1
                 }
-                className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50"
+                className=" w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-lg disabled:opacity-50"
                 tabIndex={-1}
               >
                 -
@@ -265,7 +265,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
                 disabled={
                   !formData.recorrencia || Number(formData.repeticoes) >= 52
                 }
-                className="px-2 py-1 bg-gray-200 rounded disabled:opacity-50"
+                className="w-8 h-8 bg-green-500 rounded-full disabled:opacity-50 flex items-center justify-center text-white text-lg "
                 tabIndex={-1}
               >
                 +
