@@ -1,7 +1,7 @@
-// components/agenda/ModalAgenda.tsx
 'use client';
 
-import React from 'react';
+import ClienteSelectModal from '@/components/shared/clienteSelectModal/clienteSelectModal';
+import { useState, useMemo } from 'react';
 import { FaTrash, FaSave } from 'react-icons/fa';
 import {
   Profissional,
@@ -9,6 +9,7 @@ import {
   Servico,
   AgendamentoFormData,
 } from '@/utils/types';
+
 interface ModalAgendaProps {
   isOpen: boolean;
   mode: 'add' | 'edit';
@@ -24,9 +25,9 @@ interface ModalAgendaProps {
   ) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onDelete: () => void;
+  onDeleteRecorrencia?: () => void;
 }
 
-// ...existing code...
 const ModalAgenda: React.FC<ModalAgendaProps> = ({
   isOpen,
   mode,
@@ -40,27 +41,40 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
   onChange,
   onSubmit,
   onDelete,
+  onDeleteRecorrencia,
 }) => {
+  const [clienteSearch, setClienteSearch] = useState('');
+  const [clienteModalOpen, setClienteModalOpen] = useState(false);
+  const clienteSelecionado = clientes.find(
+    (c) => String(c.id) === String(formData.cliente)
+  );
+
+  const clientesFiltrados = useMemo(
+    () =>
+      clientes.filter((c) =>
+        c.nome_completo.toLowerCase().includes(clienteSearch.toLowerCase())
+      ),
+    [clientes, clienteSearch]
+  );
+
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-[80px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
+    <div className="fixed top-[80px] inset-0 pb-[80px] bg-white bg-opacity-50 flex items-center justify-center z-20 ">
       <form
         onSubmit={onSubmit}
-        className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black" // Removed relative my-8
+        className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black max-h-[calc(100vh-160px)] overflow-y-auto"
       >
-        {/* Removed the explicit 'X' close button to match crudModal behavior */}
         <h2 className="text-xl font-semibold mb-4 text-[var(--accent)]">
           {mode === 'add' ? 'Novo Agendamento' : 'Editar Agendamento'}
         </h2>
 
         {error && (
           <div
-            className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-4" // Changed mb-3 to mb-4
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded relative mb-4"
             role="alert"
           >
-            <span className="block sm:inline whitespace-pre-line">{error}</span>{' '}
-            {/* Added whitespace-pre-line */}
+            <span className="block sm:inline whitespace-pre-line">{error}</span>
           </div>
         )}
 
@@ -72,25 +86,27 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
             >
               Cliente
             </label>
-            <select
-              id="cliente"
-              name="cliente"
-              value={formData.cliente}
-              onChange={onChange}
-              required
-              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <button
+              type="button"
+              onClick={() => setClienteModalOpen(true)}
+              className="w-full border px-3 py-2 rounded mb-2 text-left bg-white hover:bg-blue-50"
             >
-              <option value="" disabled>
-                -- Selecione --
-              </option>
-              {clientes.map((c) => (
-                <option key={c.id} value={String(c.id)}>
-                  {c.nome_completo}
-                </option>
-              ))}
-            </select>
+              {clienteSelecionado
+                ? clienteSelecionado.nome_completo
+                : 'Selecionar cliente...'}
+            </button>
+            <input type="hidden" name="cliente" value={formData.cliente} />
+            <ClienteSelectModal
+              isOpen={clienteModalOpen}
+              clientes={clientes}
+              onClose={() => setClienteModalOpen(false)}
+              onSelect={(id) => {
+                onChange({
+                  target: { name: 'cliente', value: id },
+                } as any);
+              }}
+            />
           </div>
-
           <div>
             <label
               htmlFor="servico"
@@ -122,7 +138,6 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               </p>
             )}
           </div>
-
           <div>
             <label
               htmlFor="data"
@@ -140,7 +155,6 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div>
             <label
               htmlFor="hora"
@@ -155,11 +169,29 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               value={formData.hora}
               onChange={onChange}
               required
-              step="1800" // 30 minutes
+              step="1800"
               className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
+          <div>
+            <label
+              htmlFor="duracao_personalizada"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Duração personalizada (minutos)
+            </label>
+            <input
+              id="duracao_personalizada"
+              name="duracao_personalizada"
+              type="number"
+              min={10}
+              step={5}
+              value={formData.duracao_personalizada || ''}
+              onChange={onChange}
+              placeholder="Deixe em branco para usar o padrão"
+              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Profissional
@@ -172,7 +204,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
                 )?.nome_completo || 'N/A'
               }
               readOnly
-              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600" // Kept bg-gray-100 for readonly distinct look
+              className="w-full border px-3 py-2 rounded bg-gray-100 text-gray-600"
             />
             <input
               type="hidden"
@@ -180,24 +212,132 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
               value={formData.profissional}
             />
           </div>
+
+          <div>
+            <label
+              htmlFor="status"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Situação
+            </label>
+            <select
+              id="status"
+              name="status"
+              value={formData.status || 'AGENDADO'}
+              onChange={onChange}
+              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+              disabled={mode === 'add'} // Só permite editar no modo 'edit'
+            >
+              <option value="AGENDADO">Agendado</option>
+              <option value="CONCLUIDO">Concluído</option>
+              <option value="CANCELADO">Cancelado</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="recorrencia"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Recorrência
+            </label>
+            <select
+              id="recorrencia"
+              name="recorrencia"
+              value={formData.recorrencia || ''}
+              onChange={onChange}
+              className="w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Não repetir</option>
+              <option value="1">Toda semana</option>
+              <option value="2">A cada 2 semanas</option>
+              <option value="4">A cada 4 semanas</option>
+            </select>
+          </div>
+          <div className="flex justify-start mt-8 items-center gap-4">
+            <label
+              htmlFor="repeticoes"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
+              Quantos agendamentos?
+            </label>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    target: {
+                      name: 'repeticoes',
+                      value: Math.max(1, Number(formData.repeticoes || 1) - 1),
+                    },
+                  } as any)
+                }
+                disabled={
+                  !formData.recorrencia || Number(formData.repeticoes) <= 1
+                }
+                className=" w-8 h-8 bg-red-500 rounded-full flex items-center justify-center text-white text-lg disabled:opacity-50"
+                tabIndex={-1}
+              >
+                -
+              </button>
+              <input
+                id="repeticoes"
+                name="repeticoes"
+                type="number"
+                min={1}
+                max={52}
+                value={formData.repeticoes || 1}
+                onChange={onChange}
+                disabled={!formData.recorrencia}
+                className="w-16 border px-2 py-1 rounded text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <button
+                type="button"
+                onClick={() =>
+                  onChange({
+                    target: {
+                      name: 'repeticoes',
+                      value: Math.min(52, Number(formData.repeticoes || 1) + 1),
+                    },
+                  } as any)
+                }
+                disabled={
+                  !formData.recorrencia || Number(formData.repeticoes) >= 52
+                }
+                className="w-8 h-8 bg-green-500 rounded-full disabled:opacity-50 flex items-center justify-center text-white text-lg "
+                tabIndex={-1}
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-between py-12 items-center">
-          {/* Removed mt-6 */}
-          {mode === 'edit' &&
-            onDelete && ( // Added check for onDelete prop
-              <button
-                type="button"
-                onClick={onDelete}
-                disabled={loading}
-                className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700 disabled:opacity-50"
-              >
-                <FaTrash className="mr-2" />{' '}
-                {loading ? 'Excluindo...' : 'Excluir'}
-              </button>
-            )}
+          {mode === 'edit' && onDelete && (
+            <button
+              type="button"
+              onClick={onDelete}
+              disabled={loading}
+              className="px-4 py-2 rounded bg-red-600 text-white flex items-center hover:bg-red-700 disabled:opacity-50"
+            >
+              <FaTrash className="mr-2" />{' '}
+              {loading ? 'Excluindo...' : 'Excluir'}
+            </button>
+          )}
+          {mode === 'edit' && formData.recorrencia_id && (
+            <button
+              type="button"
+              onClick={onDeleteRecorrencia}
+              disabled={loading}
+              className="px-4 py-2 rounded bg-red-700 text-white flex items-center hover:bg-red-800 disabled:opacity-50 ml-2"
+            >
+              <FaTrash className="mr-2" />
+              Excluir todos desta recorrência
+            </button>
+          )}
           <div className="flex gap-2">
-            {/* Added pb-16 pt-4 */}
             <button
               type="button"
               onClick={onClose}
@@ -209,7 +349,7 @@ const ModalAgenda: React.FC<ModalAgendaProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700 disabled:opacity-50 flex items-center" // Adicionado flex items-center
+              className="px-4 py-2 rounded bg-[var(--accent)] text-white hover:bg-blue-700 disabled:opacity-50 flex items-center"
             >
               {loading ? (
                 'Salvando...'

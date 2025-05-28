@@ -171,6 +171,27 @@ export default function useAgenda() {
     }
   };
 
+  const deleteRecorrencia = async (
+    recorrencia_id: string
+  ): Promise<boolean> => {
+    try {
+      const response = await fetch(
+        `${WS_BASE}/agenda/agendamentos/excluir-recorrencia/`,
+        {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ recorrencia_id }),
+        }
+      );
+      if (!response.ok) throw new Error('Falha ao excluir recorrência');
+      await fetchAgendaData();
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   // Derivar serviços disponíveis (exemplo de lógica que iria para o hook)
   const servicosDisponiveisParaProfissional = useMemo(() => {
     if (!profissionalSelecionado) return [];
@@ -205,7 +226,10 @@ export default function useAgenda() {
     addAgendamento,
     updateAgendamento,
     deleteAgendamento,
-    servicosDisponiveisParaProfissional, // Passar para o ModalAgenda
+    servicosDisponiveisParaProfissional,
+    deleteRecorrencia, // Para excluir recorrências
+
+    // Passar para o ModalAgenda
     // ... quaisquer outros estados ou funções que o componente Agenda precise
   };
 }

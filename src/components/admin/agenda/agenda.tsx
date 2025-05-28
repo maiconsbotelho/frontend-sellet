@@ -33,6 +33,17 @@ const calculateRowSpan = (
   return span;
 };
 
+function getStatusCellClass(status?: string) {
+  switch (status) {
+    case 'CONCLUIDO':
+      return 'bg-green-100 border-green-500 hover:bg-green-200';
+    case 'CANCELADO':
+      return 'bg-gray-200 border-gray-400 hover:bg-gray-300 text-gray-400';
+    default:
+      return 'bg-[#fadadd] border-[var(--primary)] hover:bg-red-200';
+  }
+}
+
 const Agenda = () => {
   const {
     profissionais,
@@ -62,6 +73,7 @@ const Agenda = () => {
   const [modalFormData, setModalFormData] =
     useState<AgendamentoFormData>(initialFormState);
   const [modalError, setModalError] = useState<string | null>(null);
+  const { deleteRecorrencia } = useAgenda();
 
   const handleProfissionalChange = (
     e: React.ChangeEvent<HTMLSelectElement>
@@ -141,6 +153,8 @@ const Agenda = () => {
         servico: String(agendamento.servico_id || ''),
         data: data,
         hora: hora.substring(0, 5),
+        status: agendamento.status || 'AGENDADO',
+        recorrencia_id: agendamento.recorrencia_id,
       });
     } else {
       setModalFormData({
@@ -180,13 +194,25 @@ const Agenda = () => {
       return;
     }
 
-    const payload = {
+    const payload: any = {
       cliente: clienteId,
       profissional: profissionalId,
       servico: servicoId,
       data: formData.data,
       hora: formData.hora,
     };
+    if (formData.status) {
+      payload.status = formData.status;
+    }
+
+    if ('duracao_personalizada' in formData && formData.duracao_personalizada) {
+      payload.duracao_personalizada = Number(formData.duracao_personalizada);
+    }
+    // ...existing code...
+    if (formData.recorrencia)
+      payload.recorrencia = Number(formData.recorrencia);
+    if (formData.repeticoes) payload.repeticoes = Number(formData.repeticoes);
+    // ...existing code...
 
     let success = false;
     try {
@@ -244,6 +270,19 @@ const Agenda = () => {
       setModalError(error.message || 'Ocorreu um erro ao excluir.');
     } finally {
       setLoadingModal(false);
+    }
+  };
+
+  const handleDeleteRecorrencia = async () => {
+    if (!modalFormData.recorrencia_id) return;
+    setLoadingModal(true);
+    setModalError(null);
+    const ok = await deleteRecorrencia(modalFormData.recorrencia_id);
+    setLoadingModal(false);
+    if (ok) {
+      setIsModalOpen(false);
+    } else {
+      setModalError('Falha ao excluir recorrência.');
     }
   };
 
@@ -445,9 +484,14 @@ const Agenda = () => {
 
                         if (slot?.ocupado === null) {
                           cellContent = (
-                            <span className="text-gray-400 italic text-xs p-1">
+                            <button
+                              onClick={() => openModal('add', dia, horario)}
+                              className="w-full h-full text-gray-400 italic text-xs p-1 hover:bg-gray-100 rounded"
+                              title={`Agendar ${dia} ${horario} (fora do expediente)`}
+                              type="button"
+                            >
                               Fora
-                            </span>
+                            </button>
                           );
                         } else if (slot?.ocupado === true) {
                           cellContent = (
@@ -455,7 +499,9 @@ const Agenda = () => {
                               onClick={() =>
                                 openModal('edit', dia, horario, slot)
                               }
-                              className="w-full h-full text-left p-1 bg-[#fadadd] border-[var(--primary)] border-2 hover:bg-red-200 rounded text-xs flex flex-col gap-1 justify-center"
+                              className={`w-full h-full text-left p-1 border-2 rounded text-xs flex flex-col gap-1 justify-center ${getStatusCellClass(
+                                slot.status
+                              )}`}
                               title={`Editar Agendamento: ${
                                 slot.nome_cliente
                               } (${slot.servico_nome || 'Serviço'})`}
@@ -511,6 +557,7 @@ const Agenda = () => {
           onChange={handleModalChange}
           onSubmit={handleFormSubmit}
           onDelete={handleDeleteAgendamento}
+          onDeleteRecorrencia={handleDeleteRecorrencia}
         />
       </div>
     </div>

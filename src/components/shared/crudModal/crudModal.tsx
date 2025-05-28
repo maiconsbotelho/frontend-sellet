@@ -68,10 +68,10 @@ export default function CrudModal({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-[50px] left-0 right-0 pb-[80px] bg-opacity-50 flex items-center justify-center z-20 overflow-y-auto">
+    <div className="fixed top-[50px] inset-0 pb-[80px] bg-white bg-opacity-50 flex items-center justify-center z-20 ">
       <form
         onSubmit={onSubmit}
-        className="bg-white p-6 rounded shadow-lg w-full max-w-lg text-black my-8" // Added my-8 for scroll margin
+        className="bg-white p-6 rounded w-full max-w-lg text-black my-8 max-h-[calc(100vh-160px)] overflow-y-auto" // Added my-8 for scroll margin
       >
         <h2 className="text-xl font-semibold text-[var(--accent)] mb-4">
           {title}
